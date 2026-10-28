@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0b1724"><title>Hammer throw the game — Version 3.0</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#0b1724;color:#eef6f6;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;touch-action:none}#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}.hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;display:flex;flex-direction:column;gap:7px;pointer-events:none}.topline{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-size:16px;font-weight:850;letter-spacing:.5px}.tag{font-size:10px;color:#83e9da;letter-spacing:1.5px;font-weight:700}.pill{border:1px solid #ffffff33;background:#122b3add;border-radius:100px;padding:7px 10px;font-size:11px;font-weight:700}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.stat{background:#102a3bdf;border:1px solid #ffffff18;padding:9px 11px;border-radius:12px;backdrop-filter:blur(4px)}.stat span{display:block;font-size:10px;color:#a6b9c8;text-transform:uppercase;letter-spacing:1px}.stat b{display:block;font-size:17px;margin-top:2px;font-variant-numeric:tabular-nums}.progress{height:4px;background:#ffffff22;border-radius:10px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,#54d6c3,#e7b65b);width:0%}.foot{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));display:flex;align-items:flex-start;justify-content:space-between;gap:10px;pointer-events:none}.instructions{max-width:270px;font-size:12px;color:#b4cad5;line-height:1.45;background:#0e2635cf;padding:10px 12px;border-radius:12px;border:1px solid #ffffff18}.controls{display:flex;gap:6px;pointer-events:auto;transform:translateY(-58px)}.instructions{transform:translateY(-58px);display:flex;align-items:center;gap:8px}.instructions #hint{flex:1}button{color:#ebfaf8;font-weight:800;border:1px solid #ffffff33;background:#204352;min-height:40px;border-radius:11px;padding:0 13px;cursor:pointer}button.primary{color:#08302d;background:#6af1d5;border-color:#6af1d5}.message{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);width:min(90vw,340px);text-align:center;background:#0a1c2bee;border:1px solid #ffffff30;border-radius:20px;padding:22px 20px;box-shadow:0 16px 55px #0007;pointer-events:none;transition:opacity .15s}.message.hide{opacity:0;pointer-events:none}.message:not(.hide){pointer-events:auto}.message .retry-in-message{display:block;margin:18px auto 0;padding:0 24px;min-height:46px;font-size:15px}.message.results{width:min(94vw,410px);padding:14px 14px 16px;top:46%;max-height:82vh;overflow-y:auto}.message.results .result{font-size:32px;margin:2px 0}.message.results .retry-in-message{margin-top:9px}.charts{display:grid;gap:6px;margin-top:10px;text-align:left}.chartline{font-size:10px;color:#d8e6e8;font-weight:700;display:flex;justify-content:space-between}.chart-canvas{display:block;width:100%;height:92px;background:#101f2c;border:1px solid #ffffff25;border-radius:7px}.chart-note{font-size:9px;color:#b3c5ce;text-align:center}.message h2{margin:0 0 8px;font-size:24px}.message p{margin:0;color:#bdced6;font-size:13px;line-height:1.55}.message strong{color:#73efd9}.result{font-size:38px;font-weight:900;color:#77f2d9;margin:8px 0}#toast{position:fixed;left:50%;top:24%;transform:translateX(-50%);background:#742d2be8;color:#fff;padding:11px 15px;border-radius:10px;font-size:13px;font-weight:750;opacity:0;pointer-events:none;text-align:center;white-space:nowrap}.legend{display:flex;justify-content:center;gap:13px;font-size:10px;color:#b6d0d8;margin-top:3px}.dot{display:inline-block;height:8px;width:8px;border-radius:50%;margin-right:4px}.legend>span{white-space:nowrap}@media(max-height:620px){.hud{gap:4px}.stat{padding:6px 8px}.stat b{font-size:14px}.instructions{font-size:10px;padding:7px}.foot{bottom:7px}.message{top:45%}}
+
+.instructions{max-width:205px;display:flex;gap:9px;align-items:center;pointer-events:auto;font-size:11px}
+.help-trigger{flex:none;width:34px;height:34px;min-height:34px;padding:0;border-radius:50%;font-size:19px;background:#28566b;border-color:#80cbbda6}
+.help-shade{position:fixed;inset:0;z-index:30;background:#06121bd9;display:flex;align-items:center;justify-content:center;padding:18px;pointer-events:auto}
+.help-shade[hidden]{display:none}
+.help-panel{width:min(100%,440px);max-height:min(78dvh,680px);background:#102c3b;border:1px solid #7dbbaa5c;box-shadow:0 18px 65px #000b;border-radius:17px;display:flex;flex-direction:column;overflow:hidden}
+.help-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 17px;border-bottom:1px solid #ffffff24}
+.help-heading h2{margin:0;font-size:19px}
+.help-close{min-height:34px;padding:0 12px}
+.help-body{padding:14px 19px 22px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;color:#cfdee5;font-size:13px;line-height:1.56}
+.help-body h3{font-size:14px;color:#7ce5ce;margin:16px 0 6px}.help-body h3:first-child{margin-top:0}
+.help-body p{margin:0 0 10px}.help-body ol{padding-left:20px;margin:8px 0}
+
+/* 3.0: lightweight single-file menus and competition widgets */
+.mode-shade{position:fixed;inset:0;z-index:22;background:#081621ed;display:flex;align-items:center;justify-content:center;padding:15px;touch-action:pan-y}
+.mode-shade[hidden]{display:none}.mode-panel{width:min(440px,100%);max-height:90dvh;overflow-y:auto;background:#102b3b;border:1px solid #84c5b267;border-radius:19px;padding:20px;box-shadow:0 20px 70px #000b;touch-action:pan-y}.mode-panel h1{font-size:22px;margin:0 0 4px}.mode-panel h3{font-size:14px;margin:15px 0 6px;color:#94e7d4}.mode-panel p{font-size:12px;color:#b9d1dc;line-height:1.4}.mode-panel input,.mode-panel select{background:#08202c;color:#fff;border:1px solid #709e9b77;border-radius:9px;padding:9px;width:100%;font:inherit;min-height:40px}.mode-panel label{font-size:12px;color:#b9d1dc;display:block;margin:10px 0 5px}.mode-choices{display:grid;gap:8px}.mode-choice{text-align:left;padding:10px 13px;height:auto;min-height:60px}.mode-choice small{display:block;font-size:11px;font-weight:400;color:#bed1d7;margin-top:3px}.mode-choice.active{border-color:#6af1d5;background:#174b4a}.mode-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mode-row>*{flex:1}.mini-board{position:fixed;top:146px;right:10px;z-index:4;width:min(142px,38vw);padding:8px;border:1px solid #ffffff44;background:#0c2533e8;border-radius:12px;color:#d8ede8;font-size:10px;pointer-events:none;line-height:1.5}.mini-board[hidden]{display:none}.mini-board strong{color:#81f7d7}.mini-board .leader{display:flex;justify-content:space-between;gap:4px}.result-table{width:100%;border-collapse:collapse;font-size:12px;margin:9px 0}.result-table td,.result-table th{padding:6px 4px;border-bottom:1px solid #ffffff1e}.result-table th{color:#9de5d2}.result-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;justify-content:center}.result-actions button{font-size:12px;min-height:38px}.results .charts.is-collapsed{display:none}.mode-shade .note{font-size:11px;color:#95b4c0}.mode-advanced[hidden]{display:none}
+/* Compact, non-obscuring competition overlay */
+.mini-board:has(.board-title){width:min(116px,30vw);padding:6px 7px;top:142px;font-size:10px;border-radius:9px;line-height:1.3}
+.board-title{font-size:9px;letter-spacing:.4px;color:#9bd6c8;font-weight:700}
+.board-player{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:2px 0}
+.board-best{font-size:10px;white-space:nowrap}
+.attempts-caption{font-size:11px;color:#a6ecdc;font-weight:800;margin-top:10px}
+.attempts-scroll{overflow-x:auto;touch-action:pan-x}
+.attempts-table{table-layout:fixed;min-width:290px;font-variant-numeric:tabular-nums}
+.attempts-table td,.attempts-table th{text-align:center;padding:6px 2px;font-size:10px}
+
+/* V3.0 menu palette: concrete, burnt tartan and grassy green. */
+.mode-shade{background:rgba(25,34,30,.88)}
+.mode-panel{background:linear-gradient(160deg,#414943 0%,#343b37 55%,#303936 100%);border:1px solid #b39c80;box-shadow:0 18px 55px #161d1abb;color:#f8f3e9}
+.mode-panel h1{color:#fff4e3}
+.mode-panel h3{color:#ffc08d}
+.mode-panel p,.mode-panel label,.mode-panel .note{color:#e2d9ca}
+.mode-panel input,.mode-panel select,.mode-panel textarea{background:#26332d!important;color:#fff9ef!important;border:1px solid #889482!important}
+.mode-panel button{background:#525c52;border:1px solid #8d9b83;color:#fff8e8}
+.mode-panel .mode-choice small{color:#e2ded1}
+.mode-panel .mode-choice.active{background:#865039;border-color:#f2b080;color:#fff9f0}
+.mode-panel button.primary{background:#ce8750;color:#221f1b;border-color:#efa971}
+.mode-panel button:focus-visible{outline:2px solid #ffe4a9;outline-offset:2px}
+
+/* Refined home screen: match the crisp slate widgets, with restrained tartan accents. */
+.mode-shade{background:rgba(8,19,27,.83)}
+.mode-panel{background:#122a38;border:1px solid #8eaaae70;box-shadow:0 15px 48px #0008;color:#edf4f5}
+.mode-panel h1{color:#f5fbfa}
+.mode-panel h3{color:#f1b078}
+.mode-panel p,.mode-panel label,.mode-panel .note{color:#bfd0d8}
+.mode-panel input,.mode-panel select,.mode-panel textarea{background:#0c202c!important;color:#f3faf9!important;border:1px solid #7897a477!important}
+.mode-panel button{background:#244454;border:1px solid #7295a7;color:#f4f9fa;box-shadow:none;transition:background .12s,border-color .12s}
+.mode-panel .mode-choice small{color:#b8cdd7}
+.mode-panel .mode-choice.active{background:#2e505a;border:2px solid #e9a46a;color:#fff;box-shadow:inset 4px 0 0 #e9a46a}
+.mode-panel button.primary{background:#e6a66f;color:#242a2c;border-color:#f4be8e}
+.mode-panel button:focus-visible{outline:2px solid #f4be8e;outline-offset:2px}
+</style></head>
+<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.0</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
+<div id="message" class="message"><h2>Feel the hammer.</h2><p>Touch the <strong>green guide circle</strong>, then trace <strong>two winds</strong> followed by <strong>three or four larger turns</strong>.<br><br>Keep your motion smooth. Stay near the guide; inside reduces reach, outside is capped, but staying beyond <strong>200% outside causes a foul</strong>.<br><br><strong>Lift your finger to release.</strong></p><div class="legend"><span><i class="dot" style="background:#59dec7"></i>Handle guide</span><span><i class="dot" style="background:#f0c16c"></i>Hammer ball</span></div></div>
+<div id="toast"></div><div class="foot"><div class="instructions"><span id="hint">Move the handle smoothly to build hammer speed.</span><button type="button" class="help-trigger" id="helpOpen" aria-label="How to play" title="How to play">?</button></div><div class="controls"><button id="reset">RESET</button><button class="primary" id="start">START</button></div></div>
+<div id="helpShade" class="help-shade" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle"><section class="help-panel"><div class="help-heading"><h2 id="helpTitle">How to play</h2><button type="button" id="helpClose" class="help-close" aria-label="Close help">CLOSE ×</button></div><div class="help-body">
+<h3>Getting started</h3><p>Press START. Touch near the 0° START marker and trace the green handle guide. Your finger controls the handle; the hammer ball follows under its own inertia. Make two preliminary winds, then three or four full turns. Lift your finger to release.</p>
+<h3>Build speed smoothly</h3><p>Accelerate gradually and follow the moving handle guide. During turns, the athlete advances through the throwing circle. Staying close to the optimal guide radius helps preserve a long hammer orbit. Moving too far outside the guide causes a foul.</p>
+<h3>Both throwing directions</h3><p>Start at the bottom and rotate either counterclockwise (right-handed) or clockwise (left-handed). The game detects the direction during the first wind and mirrors single support, uphill/downhill timing, and the small sector allowance automatically. Keep rotating in the chosen direction.</p><h3>Double support (DS): drive the hammer</h3><p>The easiest time to accelerate is <strong>immediately after single support ends</strong>, on the descending side, until the low point at <strong>0°</strong>. You can continue adding speed after the low point, until the next single-support phase begins, but uphill acceleration becomes more demanding.</p>
+<h3>Single support (SS): match the ball</h3><p>During SS, the athlete has very little ability to add speed. Make your finger follow the hammer's existing pace instead of forcing it ahead. The ball naturally loses some speed as it travels uphill. Extended, excessive hammer lag during turns causes a loss-of-balance foul; momentary lag is allowed. When DS resumes, accelerate smoothly again.</p>
+<h3>Why radius matters</h3><p>If you accelerate the handle faster than the ball can follow, the ball lags and its effective orbit radius can shrink. This costs speed, especially at high speeds. Recovering a shortened orbit back to a larger radius can cost additional speed. The goal is to keep the <strong>ball radius as large and stable as possible</strong> throughout the throw.</p>
+<h3>Release and results</h3><p>Release after at least three complete turns (two winds plus three turns) by lifting your finger. The ball flies along the tangent to its actual orbit. The result shows distance and charts for ball speed and orbit radius; purple chart bands indicate single support.</p>
+<p style="margin-top:20px;color:#a6bdc7">Created by Tero Mäkäläinen</p>
+</div></section></div>
+<div id="miniBoard" class="mini-board" hidden></div>
+<div id="modeShade" class="mode-shade"><div class="mode-panel">
+<h1>Hammer throw the game</h1><p>Choose a hammer and game mode. Practice uses the established 4 kg physics; the 7.26 kg hammer takes significantly more work to accelerate.</p>
+<h3>Hammer weight</h3><div class="mode-row"><button id="pickWomen" class="mode-choice active" type="button">4.00 kg</button><button id="pickMen" class="mode-choice" type="button">7.26 kg</button></div>
+<h3>Game mode</h3><div class="mode-choices"><button class="mode-choice active" data-mode="practice">PRACTICE<small>Unlimited throws and technique graphs</small></button><button class="mode-choice" data-mode="competition">COMPETITION<small>1–8 local players · Six attempts per player</small></button><button class="mode-choice" data-mode="precision">PRECISION CHALLENGE<small>Six distance targets · Three banked retries</small></button></div>
+<div id="playerSetup" class="mode-advanced" hidden><label for="playerNames">Player names (one per line, maximum 8)</label><textarea id="playerNames" rows="3" style="width:100%;background:#08202c;color:white;border-radius:9px;padding:9px;touch-action:pan-y">Player 1
+Player 2</textarea></div>
+<div id="precisionSetup" class="mode-advanced" hidden><p>Targets: 35, 45, 55, 60, 65 and 75 m. One free retry after a foul per target; additional retries or retries after valid throws spend the shared bank of three. The best valid result for each target counts.</p></div>
+<div class="mode-row" style="margin-top:15px"><button id="launchMode" class="primary">PLAY</button></div><p class="note">Created by Tero Mäkäläinen</p>
+</div></div>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');let helpOpen=false;const $=id=>document.getElementById(id);let W=390,H=680,scale=1,offX=0,offY=0,dpr=1;
+const TWO=Math.PI*2, wire=82, ballRadius=9, OPT_WIND=41, OPT_TURN=55, FAIL=2.0;
+// Canvas velocity to physical launch velocity: calibrated independently of visual orbit.
+const METERS_PER_PIXEL_PER_SECOND=0.020;
+// Gameplay flight calibration: report simulated hammer speed unchanged,
+// but use 95% of that speed for the projectile trajectory.
+// This models combined unrepresented flight losses; not a measured drag law.
+const FLIGHT_SPEED_FACTOR=0.95;
+// v3: keep 4 kg exactly as the established physics baseline. 7.26 kg has
+// lower effective athlete drive and slower responsiveness (initial calibration).
+const HAMMERS={women:{mass:4,drive:1,response:1,shirt:'#c53d49',character:'woman'},men:{mass:7.26,drive:0.18275,response:0.21675,shirt:'#285ebd',character:'man'}};
+let hammerType='women';
+let gameMode='practice', chosenMode='practice', gameStarted=false, gameFinished=false;
+let players=[], playerIndex=0, roundIndex=0, competitionResults=[];
+const TARGETS=[35,45,55,60,65,75];
+let targetIndex=0, precisionBank=3, precisionFreeUsed=false, precisionAttempts=[], precisionBest=null;
+let attemptResolved=false;
+
+// Game-feel parameters, not calibrated athlete measurements.
+const TANGENTIAL_RESPONSE=2.25, MAX_DRIVE_ACCEL=285;
+const MAX_POWER=7800; // pixels^2/s^3: limits speed * tangential acceleration
+const POWER_FLOOR_SPEED=115; // avoids infinite acceleration at rest
+const MAX_COMFORT_TENSION=940; // px/s^2: above this, useful driving force declines
+const LOAD_SOFTNESS=1.25;
+// Winds get stronger hand coupling; turns retain v05 feel at low speed,
+// but have gentler response and less available power at higher speeds.
+const WIND_RESPONSE_MULT=1.90;
+const WIND_DRIVE_MULT=1.42;
+const TURN_HIGH_SPEED_RESPONSE_DROP=0.67;
+const TURN_HIGH_SPEED_POWER_DROP=0.67;
+const TURN_SPEED_KNEE=415;
+// Displayed speed = simulated speed * 0.020. At ~30 m/s (1500 px/s),
+// positive athlete input is reduced to nearly zero compared with its low-speed value.
+// This is a smooth soft ceiling, not a clamp on actual ball velocity.
+const TURN_SOFT_CAP_START=690;
+const TURN_SOFT_CAP_RANGE=505;
+const TURN_SOFT_CAP_EXPONENT=2.45;
+// Second wind retains its familiar coupling but builds speed less easily.
+const SECOND_WIND_POWER_REDUCTION=0.64;
+// Wind one begins freely; resistance builds once the ball has momentum.
+const WIND_SPEED_KNEE_MPS=6.0;
+// From turn one onward, athlete power is limited even before the speed ceiling.
+const EARLY_TURN_DRIVE_FACTOR=0.60;
+// Progressive, turn-dependent soft power ceiling (displayed m/s). Keeps a fast
+// first turn and late catch-up from replacing a good six-rotation build-up.
+const PHASE_SPEED_BASE=17.0, PHASE_SPEED_GAIN=3.0;
+const PHASE_SPEED_MARGIN=3.2, PHASE_SPEED_WIDTH=3.9;
+const LATE_CARRY_REFERENCE_MPS=18.0;
+// Strong additional high-speed energy-input loss: 29–30 m/s is near saturation.
+const FINAL_SPEED_KNEE=850; // 17 m/s displayed, in internal velocity units
+const FINAL_SPEED_WIDTH=340;
+// Short orbit becomes increasingly costly as speed rises, turns only.
+const MIN_EFFECTIVE_RADIUS=0.55;
+const RADIUS_PENALTY_START=0.92;
+const RADIUS_DRIVE_STRENGTH=3.1;
+const RADIUS_DRAG_STRENGTH=0.22;
+// Sustained tight orbits now cost energy continuously, even at fixed radius.
+// This is technique/arm-compliance loss, not ideal-wire friction.
+const TUCKED_ORBIT_DAMPING=0.43; // 1/s at 28 m/s and a 20% radius shortfall
+const TUCKED_DRIVE_REDUCTION=4.4;
+// Turns only: sector center (toward screen top) is the high point.
+const SECTOR_HALF_ANGLE=17.46*Math.PI/180;
+// Ball-angle coordinates: right=0°, front=90°, left=180° (CCW).
+// Begin 80° to the right of sector center; finish 15° beyond the left sector ray.
+const SINGLE_SUPPORT_START=10*Math.PI/180;
+const SINGLE_SUPPORT_END=Math.PI/2+SECTOR_HALF_ANGLE+15*Math.PI/180;
+// Mirror the turn-technique timing for clockwise (left-handed) throwers.
+// startDir is positive for clockwise screen movement, negative for counterclockwise.
+function normalizedPhase(x){return ((x%TWO)+TWO)%TWO}
+function techniquePhase(geometricPhase){return startDir>0?normalizedPhase(Math.PI-geometricPhase):geometricPhase}
+function isSingleSupport(geometricPhase){const a=techniquePhase(geometricPhase);return a>=SINGLE_SUPPORT_START&&a<=SINGLE_SUPPORT_END}
+
+const VERTICAL_GRAVITY=215; // screen-units/s²; tangential component of gravity
+const SINGLE_SUPPORT_DRIVE=0.003; // very little positive drive during single support
+// During single support the athlete cannot perfectly maintain hammer energy.
+// Modest tangential-only dissipation, growing with ball speed; fully phased out
+// in preliminary winds and smoothly tapered at SS entry/exit.
+// During turns only: sustained angular separation between the athlete's
+// handle and hammer indicates loss of balance. Brief lag is recoverable.
+const LAG_FREE_ANGLE=46*Math.PI/180;
+const LAG_FAILURE_INTEGRAL=0.27; // integrated excess separation, rad * seconds
+const LAG_RECOVERY_RATE=0.075; // rad*s recovered for each second of good alignment
+const SS_BASE_DAMPING=0.23; // inverse seconds
+const SS_SPEED_DAMPING=0.22; // inverse seconds at 28 m/s
+const DOWNHILL_DRIVE_BONUS=0.79; // no free athlete-power bonus; descending gravity is modeled separately
+// Only in turns: outward recovery reduces angular velocity (approximate angular
+// momentum conservation) and adds a technique loss after large lag.
+// Orbit change losses are computed from actual BALL radius about the athlete,
+// not from the finger/handle radius. Small integration noise is ignored.
+const ORBIT_CHANGE_DEADBAND=0.085; // px / simulation step
+const OUTWARD_MOMENTUM_FACTOR=0.72; // near angular-momentum conservation on expansion
+const INWARD_TECHNIQUE_LOSS=0.79;  // collapse loses useful tangential energy
+const OUTWARD_TECHNIQUE_LOSS=0.68; // re-extension costs more after a collapse
+const SHORT_RADIUS_LOSS=0.49;     // extra loss if orbit is substantially tucked in
+const MAX_TANGENTIAL_SPEED=1250; // numerical safeguard, not the primary limiter
+let directionProbe=0,reverseProbe=0;let lagExposure=0,lateCarryEfficiency=1,lateCarryCaptured=false;let telemetry=[],lastSample=-1;let previousOrbitRadius=0,recentRadiusCollapse=0,recoveryIndicator=0;let overRadiusSince=0;let mode='ready',pointer=null,angle=0,lastAngle=0,turns=0,startDir=0,handle={x:0,y:0},prevHandle={x:0,y:0},ball={x:0,y:0,vx:0,vy:0},finger={x:0,y:0},ratio=1,simTime=0,flight=null,lastFrame=0,acc=0, smoothness=1, speedM=0,toastUntil=0,trail=[],simulatedHandle={x:0,y:0};
+function fit(){dpr=Math.min(devicePixelRatio||1,2);const vw=innerWidth,vh=innerHeight;canvas.width=Math.round(vw*dpr);canvas.height=Math.round(vh*dpr);const usableH=Math.max(350,vh);scale=Math.min(vw/390,usableH/680);W=vw/scale;H=vh/scale;offX=0;offY=0;ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0)}
+addEventListener('resize',fit);fit();
+function center(t=turns){const p=Math.max(0,Math.min(1,(t-2)/4));return {x:W/2,y:H*.605- p*Math.min(85,H*.13)}}
+function opt(t=turns){const p=Math.max(0,Math.min(1,(t-2)/.36));return OPT_WIND+(OPT_TURN-OPT_WIND)*p}
+function point(e){return {x:e.clientX/scale,y:e.clientY/scale}}
+function setHint(s){$('hint').textContent='Move the handle smoothly to build hammer speed.'}
+function reset(){attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
+function begin(){reset();mode='armed';$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
+function foul(msg){mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
+function showToast(s){$('toast').textContent=s;$('toast').style.opacity=1;toastUntil=performance.now()+1900}
+function touchStart(e){lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
+function touchMove(e){if(e.pointerId!==pointer||mode!=='playing')return;e.preventDefault();const events=e.getCoalescedEvents?.()||[e];for(const ev of events){const p=point(ev),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),best=opt();finger=p;ratio=r/best;if(r>FAIL*best){if(!overRadiusSince)overRadiusSince=performance.now();if(performance.now()-overRadiusSince>280){foul('You stayed beyond 200% of the ideal handle radius.');return}}else overRadiusSince=0;const a=Math.atan2(p.y-c.y,p.x-c.x);let d=a-lastAngle;while(d>Math.PI)d-=TWO;while(d< -Math.PI)d+=TWO;lastAngle=a;
+// Detect the first deliberate rotation from accumulated angular movement, not
+// a single tiny pointer delta (which can be jitter or a sideways initial touch).
+// If the first tentative direction is wrong, allow re-detection while still
+// at the start instead of leaving the progress counter stuck at zero.
+if(startDir===0){
+  directionProbe+=d;
+  if(Math.abs(directionProbe)>=0.17){
+    startDir=Math.sign(directionProbe);
+    turns=Math.min(6.2,Math.abs(directionProbe)/TWO);
+    directionProbe=0;
+  }
+}else{
+  const delta=startDir*d;
+  if(delta>=0){reverseProbe=Math.max(0,reverseProbe-delta);}
+  else if(turns<0.08){reverseProbe+=-delta;}
+  turns=Math.max(0,Math.min(6.2,turns+delta/TWO));
+  if(turns<0.08&&reverseProbe>0.20){
+    startDir=-startDir;
+    turns=Math.min(6.2,reverseProbe/TWO);
+    reverseProbe=0;
+  }
+}
+angle=a;const newC=center(),rHandle=Math.min(r,opt());prevHandle={...handle};handle={x:newC.x+Math.cos(a)*rHandle,y:newC.y+Math.sin(a)*rHandle};
+}}
+function touchEnd(e){if(e.pointerId!==pointer)return;e.preventDefault();pointer=null;if(mode!=='playing')return;release()}
+canvas.addEventListener('pointerdown',touchStart);canvas.addEventListener('pointermove',touchMove);canvas.addEventListener('pointerup',touchEnd);canvas.addEventListener('pointercancel',touchEnd);window.addEventListener('blur',()=>{if(mode==='playing')release()});$('helpOpen').onclick=()=>{helpOpen=true;$('helpShade').hidden=false;};$('helpClose').onclick=()=>{helpOpen=false;$('helpShade').hidden=true;};$('helpShade').addEventListener('click',e=>{if(e.target===$('helpShade')){$('helpClose').click()}});$('reset').onclick=()=>{if(gameMode==='practice')begin();else showModeMenu()};$('start').onclick=()=>{if(gameMode==='practice')begin();else if(!gameFinished)begin();else showModeMenu()};$('message').addEventListener('click',handleResultAction);
+function release(){if(turns<.3){mode='armed';showToast('Build some rotation before releasing');return}
+// The hammer leaves along the tangent to its own orbit around the athlete,
+// NOT the tangent to the finger/handle path. Use the same velocity for the
+// ball animation, the distance, and the sector landing coordinates.
+const pivot=center(),rx=ball.x-pivot.x,ry=ball.y-pivot.y;
+const orbitRadius=Math.max(1,Math.hypot(rx,ry));
+const tangentX=-ry/orbitRadius,tangentY=rx/orbitRadius;
+const tangentialVelocity=ball.vx*tangentX+ball.vy*tangentY;
+const signedTangential=Math.abs(tangentialVelocity)>0.01?tangentialVelocity:
+  (Math.sign(angle-lastAngle)||1)*Math.hypot(ball.vx,ball.vy);
+const vx=tangentX*signedTangential,vy=tangentY*signedTangential;
+const v=Math.hypot(vx,vy);const ms=v*METERS_PER_PIXEL_PER_SECOND;const flightMs=ms*FLIGHT_SPEED_FACTOR;const vh=flightMs*Math.cos(42*Math.PI/180),vz=flightMs*Math.sin(42*Math.PI/180),g=9.81,h0=1.65;const airtime=(vz+Math.sqrt(vz*vz+2*g*h0))/g;const distance=vh*airtime;const forward= -vy/(v||1);const landed=distance*forward;const lateral=distance*(vx/(v||1));
+// Convert the actual release position to meters relative to the THROWING CIRCLE center.
+// Forward is toward the top of the screen; lateral is toward the right.
+// Both release offset and projectile displacement must contribute to sector validity.
+const circleCenterX=W/2, circleCenterY=H*.55;
+const circleRadiusPx=Math.min(150,W*.39,H*.26);
+const throwingCircleRadiusM=1.0675;
+const releaseLateralM=(ball.x-circleCenterX)*throwingCircleRadiusM/circleRadiusPx;
+const releaseForwardM=(circleCenterY-ball.y)*throwingCircleRadiusM/circleRadiusPx;
+const landingLateralM=releaseLateralM+lateral;
+const landingForwardM=releaseForwardM+landed;
+speedM=ms;
+flight={t:0,hidden:false,time:Math.max(.65,airtime),distance:Math.max(0,landed),lateral,
+  landingLateralM,landingForwardM,speed:ms,fullDistance:distance,start:{...ball},vx,vy,final:false};trail=[];mode='flight';$('message').classList.add('hide');setHint('Released! The flight is calculated from scaled release velocity and direction.');}
+function physics(dt,handVx,handVy){if(mode!=='playing'&&mode!=='armed')return;if(mode==='armed')return;simTime+=dt;
+// Capture the speed carried out of turn two. Later turns cannot fully make up
+// for a badly underpowered start just by spinning the finger extremely fast.
+if(turns>=4&&!lateCarryCaptured){
+  lateCarryCaptured=true;
+  lateCarryEfficiency=Math.max(.62,Math.min(1,.62+.38*speedM/LATE_CARRY_REFERENCE_MPS));
+}
+// A tension-only wire: forces act only if the line is stretched, never when compressed.
+const dx=ball.x-handle.x,dy=ball.y-handle.y,r=Math.max(.001,Math.hypot(dx,dy)),nx=dx/r,ny=dy/r;
+
+const relV=(ball.vx-handVx)*nx+(ball.vy-handVy)*ny;
+const extension=Math.max(0,r-wire);
+// A soft contact constraint with high spring stiffness and radial damping.
+const tension=(r>=wire-.2)?Math.max(0,1700*extension+25*relV):0;
+// The player's rotation drives the hammer tangentially, while inertia and wire tension
+// remain simulated. This athlete-to-hammer coupling prevents the slow, balloon-like lag
+// of the original free trailing mass. Irregular motion is still visible in the orbit.
+const c=center(), hx=handle.x-c.x, hy=handle.y-c.y;
+const omega=Math.max(-10,Math.min(10,(hx*handVy-hy*handVx)/Math.max(180,hx*hx+hy*hy)));
+const tx=-ny,ty=nx;
+const currentTangential=(ball.vx-handVx)*tx+(ball.vy-handVy)*ty;
+const desiredTangential=omega*wire;
+// Softer handle coupling: inertia is visible through acceleration and direction changes.
+// The athlete can only put a limited amount of mechanical power into the orbit.
+// At high hammer speed, maintaining the same acceleration costs more power.
+// This makes getting the hammer moving easy, but progressively harder to add speed.
+const absoluteTangentialSpeed=Math.abs(ball.vx*tx+ball.vy*ty);
+const powerLimitedAccel=MAX_POWER/Math.max(POWER_FLOOR_SPEED,absoluteTangentialSpeed);
+// A simple load/strength constraint: high wire tension makes it harder for the
+// athlete to generate extra useful drive while staying balanced.
+const estimatedTension=Math.pow(absoluteTangentialSpeed,2)/wire;
+const overload=Math.max(0,estimatedTension/MAX_COMFORT_TENSION-1);
+const loadEfficiency=1/(1+LOAD_SOFTNESS*overload*overload);
+// Blend the winding assist away over the transition into the turns.
+const turnBlend=Math.max(0,Math.min(1,(turns-1.80)/.55));
+const smoothstep01=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+// Reducing drive only at high speed preserves the satisfying early turns.
+// Exponential *loss of usable drive* above the knee, without a hard speed cap.
+// At 415 px/s efficiency is 100%; at 650 it is ~71%, at 850 ~37%,
+// at 1050 ~14%. Applied only during turns, leaving winds unchanged.
+const excessSpeed=Math.max(0,absoluteTangentialSpeed-TURN_SPEED_KNEE)/410;
+const highSpeed=Math.max(0,Math.min(1,excessSpeed));
+const expResponse=Math.exp(-0.80*excessSpeed*excessSpeed);
+const expPower=Math.exp(-1.00*excessSpeed*excessSpeed);
+const windBuild=smoothstep01((turns-.40)/.42);
+const windSpeedExcess=Math.max(0,absoluteTangentialSpeed*METERS_PER_PIXEL_PER_SECOND-WIND_SPEED_KNEE_MPS);
+const windMomentumResistance=Math.exp(-0.55*Math.pow(windSpeedExcess/12,1.5)*windBuild);
+const windResponseResistance=Math.sqrt(windMomentumResistance);
+const responseMult=(1-turnBlend)*WIND_RESPONSE_MULT*windResponseResistance + turnBlend*expResponse;
+const secondWindAmount=smoothstep01((turns-0.88)/0.30)*(1-smoothstep01((turns-1.85)/0.30));
+const windPowerMult=1-(1-SECOND_WIND_POWER_REDUCTION)*secondWindAmount;
+const driveMult=(1-turnBlend)*WIND_DRIVE_MULT*windPowerMult*windMomentumResistance + turnBlend*expPower;
+const softCapExcess=Math.max(0,(absoluteTangentialSpeed-TURN_SOFT_CAP_START)/TURN_SOFT_CAP_RANGE);
+const softCapEfficiency=Math.exp(-Math.pow(softCapExcess,TURN_SOFT_CAP_EXPONENT));
+const finalExcess=Math.max(0,(absoluteTangentialSpeed-FINAL_SPEED_KNEE)/FINAL_SPEED_WIDTH);
+const finalSpeedEfficiency=Math.exp(-1.45*finalExcess*finalExcess);
+// Estimate real ball orbit about athlete, not finger radius. A shortened orbit
+// reduces useful power transmission, increasingly strongly at high speed.
+const currentOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);
+const orbitRatio=Math.max(MIN_EFFECTIVE_RADIUS,Math.min(1.1,currentOrbitRadius/(wire+opt())));
+const radiusDeficit=Math.max(0,(RADIUS_PENALTY_START-orbitRatio)/RADIUS_PENALTY_START);
+const speedWeight=Math.pow(Math.max(0,absoluteTangentialSpeed)/1200,1.8);
+const sustainedShortfall=Math.max(0,Math.min(0.5,(0.96-orbitRatio)));
+const tuckedSpeedWeight=Math.pow(Math.max(0,absoluteTangentialSpeed*METERS_PER_PIXEL_PER_SECOND)/28,1.8);
+const sustainedTuckStrength=Math.pow(sustainedShortfall/0.20,1.45)*tuckedSpeedWeight;
+const radiusDriveEfficiency=Math.exp(-RADIUS_DRIVE_STRENGTH*radiusDeficit*speedWeight-TUCKED_DRIVE_REDUCTION*sustainedTuckStrength*0.22);
+const earlyTurnMultiplier=1-turnBlend*(1-EARLY_TURN_DRIVE_FACTOR);
+// Soft ceiling rises with completed turns. Limit injected *power*, not speed;
+// existing ball momentum, downhill gravity and timing still matter.
+const turnIndex=Math.max(0,Math.min(4,turns-2));
+const phaseCeiling=PHASE_SPEED_BASE+PHASE_SPEED_GAIN*turnIndex;
+const currentDisplayedSpeed=absoluteTangentialSpeed*METERS_PER_PIXEL_PER_SECOND;
+const phaseOverspeed=Math.max(0,currentDisplayedSpeed-(phaseCeiling-PHASE_SPEED_MARGIN));
+const progressiveDriveEfficiency=Math.exp(-1.4*Math.pow(phaseOverspeed/PHASE_SPEED_WIDTH,2));
+const carryFactor=turns<4?1:lateCarryEfficiency;
+// Phase is evaluated from the *hammer ball* rather than the finger.
+// For the right -> high/front -> left route (counterclockwise on screen),
+// the 3 o'clock position starts single support, which ends at the left sector ray.
+const ballFromCenterX=ball.x-c.x, ballFromCenterY=ball.y-c.y;
+const geometricPhase=normalizedPhase(-Math.atan2(ballFromCenterY,ballFromCenterX));
+const phaseCCW=techniquePhase(geometricPhase);
+const fade=0.14; // radians; avoids abrupt jumps at support boundaries
+const smoothstep=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+const supportEntry=smoothstep((phaseCCW-SINGLE_SUPPORT_START)/fade);
+const supportExit=1-smoothstep((phaseCCW-SINGLE_SUPPORT_END+fade)/fade);
+const singleSupport=(turnBlend)*(supportEntry*supportExit);
+// Extra available drive just after the left sector ray, on the downhill side.
+const downhillPhase=smoothstep((phaseCCW-SINGLE_SUPPORT_END)/.26)*(1-smoothstep((phaseCCW-Math.PI*1.75)/.35));
+const positiveDriveFactor=(1-singleSupport*(1-SINGLE_SUPPORT_DRIVE))*(1+turnBlend*downhillPhase*(DOWNHILL_DRIVE_BONUS-1));
+// Extra loss of available drive once the hammer already carries substantial speed.
+// Applied only to turns, so the preliminary winds stay exactly as in v08.
+const speedLoad=Math.max(0,(absoluteTangentialSpeed-535)/490);
+const fatigueFactor=1/(1+turnBlend*4.1*speedLoad*speedLoad);
+const maxPositiveDrive=HAMMERS[hammerType].drive*Math.min(MAX_DRIVE_ACCEL,powerLimitedAccel)*loadEfficiency*driveMult*positiveDriveFactor*fatigueFactor*earlyTurnMultiplier*((1-turnBlend)+turnBlend*softCapEfficiency*finalSpeedEfficiency*radiusDriveEfficiency*progressiveDriveEfficiency*carryFactor);
+// High hammer inertia: fast handle movements increasingly outrun the ball
+// instead of forcing it to synchronize immediately. This does not affect winds.
+const speedInertia=1/(1+turnBlend*1.8*excessSpeed*excessSpeed)*((1-turnBlend)+turnBlend*Math.sqrt(softCapEfficiency));
+const requestedDrive=(desiredTangential-currentTangential)*TANGENTIAL_RESPONSE*HAMMERS[hammerType].response*responseMult*speedInertia*((1-turnBlend)+turnBlend*Math.sqrt(finalSpeedEfficiency)*Math.sqrt(radiusDriveEfficiency)*Math.sqrt(progressiveDriveEfficiency)*Math.sqrt(carryFactor));
+// Deceleration remains possible; power/load limits apply to positive energy input.
+const accelerating=requestedDrive*currentTangential>=0;
+const drive=accelerating
+  ? Math.max(-maxPositiveDrive,Math.min(maxPositiveDrive,requestedDrive))
+  : Math.max(-MAX_DRIVE_ACCEL,Math.min(MAX_DRIVE_ACCEL,requestedDrive));
+ball.vx+=tx*drive*dt;
+ball.vy+=ty*drive*dt;
+// A tilted orbit: gravity slows the ball while climbing the right side and
+// speeds it on the descending left. Winds remain flat and unchanged.
+// Gravity acts down the screen; ty projects it onto the hammer tangent.
+ball.vx+=tx*(VERTICAL_GRAVITY*ty*turnBlend)*dt;
+ball.vy+=ty*(VERTICAL_GRAVITY*ty*turnBlend)*dt;
+// Single-support energy maintenance loss: reduce only the ball's orbital
+// tangential velocity, not radial velocity or position. This makes a well-
+// executed SS typically show a modest speed dip, while preserving the hammer's
+// orbit and keeping both throwing directions symmetric. Existing uphill gravity
+// and the near-zero positive drive still apply independently.
+if(singleSupport>0){
+  const brx=ball.x-c.x, bry=ball.y-c.y;
+  const br=Math.max(1,Math.hypot(brx,bry));
+  const btx=-bry/br, bty=brx/br;
+  const vt=ball.vx*btx+ball.vy*bty;
+  const shownSpeed=Math.abs(vt)*METERS_PER_PIXEL_PER_SECOND;
+  const damping=singleSupport*(SS_BASE_DAMPING+SS_SPEED_DAMPING*Math.pow(shownSpeed/28,2));
+  const deltaVt=vt*(1-Math.exp(-damping*dt));
+  ball.vx-=btx*deltaVt;
+  ball.vy-=bty*deltaVt;
+}
+// Unlike a radius-*change* loss, this applies as long as the hammer is
+// tucked close to the athlete. A full-radius orbit is nearly unaffected.
+// Dampen only orbital tangential velocity, avoiding artificial radial impulses.
+if(turnBlend>0 && sustainedShortfall>0){
+  const brx=ball.x-c.x,bry=ball.y-c.y,br=Math.max(1,Math.hypot(brx,bry));
+  const ux=brx/br,uy=bry/br;
+  const vt=-ball.vx*uy+ball.vy*ux;
+  const rate=turnBlend*TUCKED_ORBIT_DAMPING*Math.pow(sustainedShortfall/0.20,1.6)*
+    Math.pow(Math.abs(vt)*METERS_PER_PIXEL_PER_SECOND/28,1.75);
+  const loss=vt*(1-Math.exp(-Math.min(2.5,rate)*dt));
+  ball.vx+=uy*loss;
+  ball.vy-=ux*loss;
+}
+// Aerodynamic/technique losses grow with speed. The extra term is only used
+// in turns, where it prevents easy runaway acceleration at high speeds.
+const extraDrag=turnBlend*0.0011*Math.pow(Math.max(0,(Math.hypot(ball.vx,ball.vy)-620)/620),1.5);
+// Left/right uphill side reverses with the throwing direction.
+const uphill=Math.max(0,Math.sin(phaseCCW))*turnBlend;
+const radiusDrag=turnBlend*RADIUS_DRAG_STRENGTH*radiusDeficit*speedWeight*0.001;
+const drag=.0014+extraDrag+uphill*0.00048+radiusDrag;
+ball.vx+=(-tension*nx-drag*ball.vx*Math.hypot(ball.vx,ball.vy))*dt;
+ball.vy+=(-tension*ny-drag*ball.vy*Math.hypot(ball.vx,ball.vy))*dt;
+ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
+// Keep the wire close to its exact length when it stretches; preserve tangential motion.
+const rx=ball.x-handle.x,ry=ball.y-handle.y,rr=Math.hypot(rx,ry);
+if(rr>wire){const ux=rx/rr,uy=ry/rr;ball.x=handle.x+ux*wire;ball.y=handle.y+uy*wire;const out=(ball.vx-handVx)*ux+(ball.vy-handVy)*uy;if(out>0){ball.vx-=out*ux;ball.vy-=out*uy}}
+// Radius variation costs useful speed during turns. Contraction of the actual
+// ball orbit dissipates tangential energy (arm bending / loss of coordination).
+// When radius then expands, angular momentum implies v_t approximately scales
+// as r_old/r_new, i.e. angular speed decreases even more: omega ~ 1/r^2.
+// An additional technique loss captures the poor recovery after a severe tuck.
+// This is a deliberate athlete/technique model, NOT a claim that ideal radial
+// motion always loses energy. Winds are untouched.
+const oc=center(),ox=ball.x-oc.x,oy=ball.y-oc.y;
+const orbitR=Math.max(1,Math.hypot(ox,oy));
+const previousR=previousOrbitRadius>0?previousOrbitRadius:orbitR;
+const deltaR=orbitR-previousR;
+const radiusChange=Math.max(0,Math.abs(deltaR)-ORBIT_CHANGE_DEADBAND);
+const idealBallRadius=wire+opt();
+const shortfall=Math.max(0,Math.min(0.55,1-orbitR/idealBallRadius));
+const highSpeedWeight=Math.min(3.0,0.34+2.15*Math.pow(Math.max(0,Math.hypot(ball.vx,ball.vy)*METERS_PER_PIXEL_PER_SECOND)/28,2.2));
+// Keep memory of a compressed orbit for the outward-recovery penalty.
+recentRadiusCollapse*=Math.exp(-dt*1.9);
+if(turnBlend>0&&radiusChange>0.0001){
+  const ux=ox/orbitR,uy=oy/orbitR;
+  const vRad=ball.vx*ux+ball.vy*uy;
+  const vTan=-ball.vx*uy+ball.vy*ux;
+  const changeFraction=Math.min(0.09,radiusChange/Math.max(idealBallRadius,40));
+  let speedScale;
+  if(deltaR<0){
+    recentRadiusCollapse=Math.min(0.5,recentRadiusCollapse+changeFraction);
+    // Shortening itself is lossy, especially at high ball speeds.
+    speedScale=Math.exp(-turnBlend*highSpeedWeight*INWARD_TECHNIQUE_LOSS*changeFraction*(0.65+2.0*shortfall));
+  }else{
+    // Tangential v decreases on expansion, angular omega falls roughly with r^-2.
+    const angularMomentumScale=Math.pow(previousR/orbitR,OUTWARD_MOMENTUM_FACTOR*turnBlend);
+    const recoverySeverity=Math.min(1,shortfall*2.7+recentRadiusCollapse*2.4);
+    const techniqueScale=Math.exp(-turnBlend*highSpeedWeight*OUTWARD_TECHNIQUE_LOSS*changeFraction*(0.5+recoverySeverity));
+    speedScale=angularMomentumScale*techniqueScale;
+  }
+  // Persistent loss for motion at a shortened radius; avoid an artificial
+  // radial inward/outward impulse and never boost tangential speed here.
+  speedScale*=Math.exp(-turnBlend*highSpeedWeight*SHORT_RADIUS_LOSS*shortfall*changeFraction);
+  const newTan=vTan*Math.max(0,Math.min(1,speedScale));
+  ball.vx=vRad*ux-newTan*uy;
+  ball.vy=vRad*uy+newTan*ux;
+  const lost=Math.abs(vTan)-Math.abs(newTan);
+  recoveryIndicator=Math.max(recoveryIndicator,Math.min(1,lost/Math.max(8,Math.abs(vTan))*22));
+}
+previousOrbitRadius=orbitR;
+// Loss-of-balance test. Measure the REAL angular separation about the athlete,
+// not finger radius or raw distance between handle and ball. Only accumulate
+// the excess above a allowable lag during turns. Do not penalize winds.
+if(turns>=2 && turnBlend>0.99){
+  const pivot=center();
+  const ha=Math.atan2(handle.y-pivot.y,handle.x-pivot.x);
+  const ba=Math.atan2(ball.y-pivot.y,ball.x-pivot.x);
+  const lag=Math.abs(Math.atan2(Math.sin(ha-ba),Math.cos(ha-ba)));
+  const excess=Math.max(0,lag-LAG_FREE_ANGLE);
+  // On the downhill double-support drive (end of SS to the low point),
+  // transient hammer lag is normal. Suppress balance-exposure accumulation in
+  // this window, tapering the transition over 12 degrees at either boundary.
+  // Keep the existing radius/energy penalties active throughout the turn.
+  const ballPhase=techniquePhase(normalizedPhase(-ba));
+  const downhillStart=SINGLE_SUPPORT_END;
+  const downhillEnd=3*Math.PI/2; // bottom / low point
+  const ramp=12*Math.PI/180;
+  const easing=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+  const downhillRelief=easing((ballPhase-downhillStart)/ramp)*easing((downhillEnd-ballPhase)/ramp);
+  const weightedExcess=excess*(1-downhillRelief);
+  // Outside the downhill acceleration window, repeated lag can still foul.
+  lagExposure=Math.max(0,lagExposure + weightedExcess*(1+1.25*excess)*dt - (excess===0?LAG_RECOVERY_RATE*dt:0));
+  if(lagExposure>=LAG_FAILURE_INTEGRAL){
+    foul('Lost balance: the hammer lagged too far behind the handle for too long.');
+    return;
+  }
+}
+recoveryIndicator=Math.max(0,recoveryIndicator-dt*1.35);
+const s=Math.hypot(ball.vx,ball.vy);
+if(s>MAX_TANGENTIAL_SPEED*1.6){ball.vx*=MAX_TANGENTIAL_SPEED*1.6/s;ball.vy*=MAX_TANGENTIAL_SPEED*1.6/s}
+// Report the actual tangential component of the ball velocity around the
+// moving athlete pivot, matching the velocity used at finger-lift release.
+// Radial oscillations do not contribute to this indicated throw speed.
+const speedPivot=center(),srx=ball.x-speedPivot.x,sry=ball.y-speedPivot.y;
+const sr=Math.max(1,Math.hypot(srx,sry));
+const tangentSpeed=Math.abs((-sry*ball.vx+srx*ball.vy)/sr);
+speedM=tangentSpeed*METERS_PER_PIXEL_PER_SECOND;
+if(simTime-lastSample>=1/40){telemetry.push({turn:turns,speed:speedM,radius:orbitR,phase:phaseCCW,single:singleSupport>0.5});lastSample=simTime;}smoothness=Math.max(0,Math.min(1,smoothness*.998+(.002)*(Math.max(0,1-Math.abs(relV)/700))));
+}
+function updateHUD(){const c=center(),ba=((TWO-Math.atan2(ball.y-c.y,ball.x-c.x))%TWO+TWO)%TWO;const phase=mode==='flight'||mode==='result'?'RELEASE':turns<2?'WINDS':isSingleSupport(ba)?'SS':'DS';$('phase').textContent=phase;$('turns').textContent=turns.toFixed(2)+' / 6';$('speed').textContent=speedM.toFixed(1)+' m/s';$('radius').textContent=(Math.min(1,ratio)*100).toFixed(0)+'%';$('progress').style.width=Math.min(100,turns/6*100)+'%'}
+function circle(x,y,r,fill,stroke,line=1){ctx.beginPath();ctx.arc(x,y,r,0,TWO);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line;ctx.stroke()}}
+function line(x1,y1,x2,y2,color,w=1,dash=[]){ctx.beginPath();ctx.setLineDash(dash);ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.stroke();ctx.setLineDash([])}
+function render(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#c76c38';ctx.fillRect(0,0,W,H);const grassStart=H*.55-Math.min(150,W*.39,H*.26)-46;ctx.fillStyle='#327a4c';ctx.fillRect(0,0,W,Math.max(0,grassStart));line(0,grassStart,W,grassStart,'#e7b78788',2);
+const fieldCenter={x:W/2,y:H*.55},circleR=Math.min(150,W*.39,H*.26);circle(fieldCenter.x,fieldCenter.y,circleR,'#6f767b','#dce2df',2);circle(fieldCenter.x,fieldCenter.y,circleR-4,null,'#ffffff22',1);// Sector boundaries originate at the throwing circle itself, not the athlete.
+const sectorLength=Math.max(H*.75,circleR*3.5);
+// Both sector boundaries start at the front rim of the throwing circle.
+const sectorStartY=fieldCenter.y-circleR*Math.cos(SECTOR_HALF_ANGLE);
+const sectorStartLeft=fieldCenter.x-circleR*Math.sin(SECTOR_HALF_ANGLE);
+const sectorStartRight=fieldCenter.x+circleR*Math.sin(SECTOR_HALF_ANGLE);
+const sectorY=sectorStartY-sectorLength*Math.cos(SECTOR_HALF_ANGLE);
+line(sectorStartLeft,sectorStartY,sectorStartLeft-sectorLength*Math.sin(SECTOR_HALF_ANGLE),sectorY,'#e2e8f0a3',2);
+line(sectorStartRight,sectorStartY,sectorStartRight+sectorLength*Math.sin(SECTOR_HALF_ANGLE),sectorY,'#e2e8f0a3',2);
+line(fieldCenter.x-circleR*.83,fieldCenter.y-circleR*.6,fieldCenter.x+circleR*.83,fieldCenter.y-circleR*.6,'#ffffff18',1,[4,5]);
+ctx.textAlign='center';ctx.font='11px system-ui';ctx.fillStyle='#eef8ee';ctx.fillText('THROW DIRECTION ↑',W/2,Math.max(160,fieldCenter.y-circleR-16));
+const c=center(),r=opt(),out=r*FAIL;
+if(turns>=2&&mode==='playing'){
+  // In standard canvas coordinates, 3 o'clock = 0 and the route goes upward then left.
+  // The marked single-support arc matches the ball-angle physics interval.
+  ctx.save();
+  // Reflect the guide horizontally to match the mirrored clockwise support timing.
+  if(startDir>0){ctx.translate(2*c.x,0);ctx.scale(-1,1)}
+  ctx.beginPath();ctx.arc(c.x,c.y,r+10,-SINGLE_SUPPORT_START,-SINGLE_SUPPORT_END,true);
+  ctx.arc(c.x,c.y,r-10,-SINGLE_SUPPORT_END,-SINGLE_SUPPORT_START,false);ctx.closePath();
+  ctx.fillStyle='#49306225';ctx.fill();
+  ctx.beginPath();ctx.arc(c.x,c.y,r,-SINGLE_SUPPORT_START,-SINGLE_SUPPORT_END,true);
+  ctx.strokeStyle='#ffd2a077';ctx.lineWidth=2;ctx.stroke();
+  ctx.restore();
+}
+circle(c.x,c.y,out,null,'#b65e6366',1.1);ctx.save();ctx.setLineDash([6,6]);circle(c.x,c.y,r,null,'#53edce',2);ctx.restore();circle(c.x,c.y,r,'#56e6c20b');if(turns<.15){circle(c.x,c.y+r,5,'#fff4b4','#84542c',1);ctx.fillStyle='#ffffff';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('0° START',c.x,c.y+r+21)}
+// Forward-progress ghost path.
+if(turns>=1.8){const c2=center(6);line(c.x,c.y,c2.x,c2.y,'#74cfbd66',1,[3,5])}
+// Compact support-phase label under the circle.
+if(mode==='playing'){
+  const ba=((TWO-Math.atan2(ball.y-c.y,ball.x-c.x))%TWO+TWO)%TWO;
+  const support=isSingleSupport(ba);
+  const label=turns<2?'WINDS':support?'SS':'DS';
+  ctx.textAlign='center';ctx.font='bold 12px system-ui';
+  ctx.fillStyle=label==='SS'?'#ffca82':'#8deedc';
+  ctx.fillText(label,W/2,Math.min(H-130,fieldCenter.y+circleR+41));
+}else if(mode==='flight'){
+  ctx.textAlign='center';ctx.font='bold 12px system-ui';ctx.fillStyle='#8deedc';
+  ctx.fillText('RELEASE',W/2,Math.min(H-130,fieldCenter.y+circleR+41));
+}
+// During both winds the torso stays facing forward. Once turn one begins,
+// rotate the torso continuously from that same orientation rather than
+// snapping its facing direction to the handle's current angle. The arms
+// always reach the live handle position, including across the transition.
+const ha=Math.atan2(handle.y-c.y,handle.x-c.x);
+const bodyRotation=(startDir||1)*Math.max(0,turns-2)*TWO;
+const fx=Math.sin(bodyRotation),fy=-Math.cos(bodyRotation),ox=-fy,oy=fx;
+// Feet and torso follow only the body's orientation, not the overhead hand orbit.
+line(c.x-ox*8-fx*6,c.y-oy*8-fy*6,c.x-ox*8-fx*19,c.y-oy*8-fy*19,'#273846',7);
+line(c.x+ox*8-fx*6,c.y+oy*8-fy*6,c.x+ox*8-fx*19,c.y+oy*8-fy*19,'#273846',7);
+circle(c.x,c.y,hammerType==='men'?14:12,HAMMERS[hammerType].shirt);
+if(hammerType==='women'){
+ // Overhead view: a clear skin-colored face/head base and a brown
+ // hair cap on the opposite portion. Avoid small dots that read as a beard.
+ const hx=c.x+fx*5,hy=c.y+fy*5;
+ circle(hx,hy,7.0,'#e7b88c');                     // visible face / head
+ circle(hx+fx*3.2,hy+fy*3.2,5.5,'#593b2b');     // brown hair on crown
+}else{
+ circle(c.x+fx*5,c.y+fy*5,7,'#e7b88c');
+}
+// Arms pivot at stable shoulders during winds and reach the moving handle.
+const armPerpX=-Math.sin(ha),armPerpY=Math.cos(ha);
+line(c.x+ox*9+fx*5,c.y+oy*9+fy*5,handle.x+armPerpX*3,handle.y+armPerpY*3,'#e7b88c',4);
+line(c.x-ox*9+fx*5,c.y-oy*9+fy*5,handle.x-armPerpX*3,handle.y-armPerpY*3,'#e7b88c',4);
+line(handle.x-armPerpX*5,handle.y-armPerpY*5,handle.x+armPerpX*5,handle.y+armPerpY*5,'#293a42',5);
+circle(handle.x,handle.y,3,'#f7e2a5','#ffffff',1);
+// The *same* ball becomes the projectile. At release the wire disappears.
+if(mode==='flight'||mode==='result')drawFlight();
+if(mode!=='flight'&&mode!=='result'){line(handle.x,handle.y,ball.x,ball.y,'#d1e6e4',2)}
+if(mode==='playing'){trail.push({x:ball.x,y:ball.y});if(trail.length>65)trail.shift()}
+if(trail.length>2){
+  ctx.save();ctx.beginPath();trail.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+  ctx.strokeStyle=mode==='flight'?'#ffd38daa':'#f5c26b55';
+  ctx.lineWidth=mode==='flight'?2.8:2;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.restore();
+}
+if(mode!=='result'&&!(mode==='flight'&&flight?.hidden)){const glow=ctx.createRadialGradient(ball.x,ball.y,1,ball.x,ball.y,17);glow.addColorStop(0,'#ffde9a77');glow.addColorStop(1,'#ffde9a00');circle(ball.x,ball.y,17,glow);circle(ball.x,ball.y,ballRadius,'#eeb960','#fff0c4',1.5);circle(ball.x-2,ball.y-2,3,'#fff1cf');}
+if(mode==='armed'||mode==='ready'){ctx.font='12px system-ui';ctx.fillStyle='#8deedc';ctx.fillText('GUIDE',c.x,c.y-r-12)}
+if(mode==='playing'){const rad=ratio;ctx.font='12px system-ui';ctx.fillStyle=rad>1.25?'#fbad9d':rad<.85?'#edc987':'#8ef2de';ctx.fillText(rad>1?'Handle capped at ideal radius':rad<.85?'Shortened reach':'Smooth orbit',W/2,Math.min(H-102,fieldCenter.y+circleR+24))}
+}
+
+
+// --- Game session state and mode screens (no external dependencies) ---
+function showModeMenu(){gameFinished=false;gameStarted=false;$('modeShade').hidden=false;$('message').classList.add('hide');$('miniBoard').hidden=true;mode='ready';pointer=null;}
+function configureMenu(){
+ $('pickWomen').onclick=()=>pickHammer('women');$('pickMen').onclick=()=>pickHammer('men');
+ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{chosenMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));$('playerSetup').hidden=chosenMode!=='competition';$('precisionSetup').hidden=chosenMode!=='precision'});
+ $('launchMode').onclick=launchGame;
+}
+function pickHammer(type){hammerType=type;$('pickWomen').classList.toggle('active',type==='women');$('pickMen').classList.toggle('active',type==='men')}
+function launchGame(){gameMode=chosenMode;gameFinished=false;gameStarted=true;attemptResolved=false;
+ $('modeShade').hidden=true;playerIndex=0;roundIndex=0;targetIndex=0;precisionBank=3;precisionAttempts=[];windowPrecisionScores=[];precisionBest=null;precisionFreeUsed=false;
+ if(gameMode==='competition'){
+  players=($('playerNames').value.split(/\n|,/).map(a=>a.trim()).filter(Boolean).slice(0,8));if(!players.length)players=['Player 1'];competitionResults=players.map(()=>Array(6).fill(null));
+ }
+ begin();updateMiniBoard();
+}
+function updateMiniBoard(){let html='';if(gameMode==='competition'){
+ const name=players[playerIndex]||'Player';
+ const attempts=competitionResults[playerIndex]||[];
+ const best=Math.max(0,...attempts.filter(Number.isFinite));
+ html='<div class="board-title">ROUND '+(roundIndex+1)+'/6</div><div class="board-player">'+escapeText(name)+'</div><div class="board-best">Best '+(best?best.toFixed(2)+' m':'—')+'</div>';
+ }else if(gameMode==='precision'){
+ html='<strong>TARGET '+(targetIndex+1)+'/6</strong><br><strong>'+TARGETS[Math.min(targetIndex,5)].toFixed(2)+' m</strong><br>Bank: '+precisionBank+' retries<br>Free foul retry: '+(!precisionFreeUsed?'available':'used');
+ }else {$('miniBoard').hidden=true;return;}
+ $('miniBoard').innerHTML=html;$('miniBoard').hidden=false;
+}
+function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function chartsHTML(){return '<div class="charts is-collapsed" id="detailCharts"><div class="chartline"><span>BALL SPEED</span><span>m/s</span></div><canvas class="chart-canvas" id="speedChart"></canvas><div class="chartline"><span>HAMMER ORBIT RADIUS</span><span>px</span></div><canvas class="chart-canvas" id="radiusChart"></canvas><div class="chart-note">W1 · W2 · T1–T4 | purple = single support</div></div>'}
+function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true;
+ const score=result.valid?result.distance.toFixed(2)+' m':'NO MARK';
+ let heading=result.valid?'THROW COMPLETE':result.foul?'FOUL':escapeText(result.reason||'NO MARK');
+ let info=result.valid?'Release speed: '+result.speed.toFixed(2)+' m/s':escapeText(result.reason||'No valid distance');
+ let summary='',buttons='';
+ if(gameMode==='practice'){
+  buttons='<button class="primary" data-action="next">RESTART THROW</button><button data-action="menu">HOME</button>';
+ }else if(gameMode==='competition'){
+  competitionResults[playerIndex][roundIndex]=result.valid?result.distance:null;
+  const rows=players.map((p,i)=>'<tr><td>'+escapeText(p)+'</td><td>'+((i<playerIndex||i===playerIndex)?(competitionResults[i][roundIndex]===null?'—':competitionResults[i][roundIndex].toFixed(2)):'·')+'</td><td>'+Math.max(0,...competitionResults[i].filter(Number.isFinite)).toFixed(2)+'</td></tr>').join('');
+  const own=competitionResults[playerIndex];
+  const attemptsHTML=own.map((v,i)=>'<td>'+(v===null?'—':v.toFixed(2))+'</td>').join('');
+  summary='<div class="attempts-caption">'+escapeText(players[playerIndex])+' · ALL SIX ATTEMPTS (m)</div><div class="attempts-scroll"><table class="result-table attempts-table"><thead><tr>'+own.map((_,i)=>'<th>'+(i+1)+'</th>').join('')+'</tr></thead><tbody><tr>'+attemptsHTML+'</tr></tbody></table></div><table class="result-table"><thead><tr><th>Player</th><th>Round (m)</th><th>Best (m)</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  const last=roundIndex===5&&playerIndex===players.length-1;
+  buttons='<button class="primary" data-action="next">'+(last?'FINAL STANDINGS':'NEXT PLAYER')+'</button><button data-action="menu">HOME</button>';
+ }else{
+  const error=result.valid?Math.abs(result.distance-TARGETS[targetIndex]):null;
+  if(error!==null&&(!precisionBest||error<precisionBest.error))precisionBest={distance:result.distance,error};
+  precisionAttempts.push({target:targetIndex,valid:result.valid,distance:result.distance,error});
+  const bestText=precisionBest?'Best: '+precisionBest.distance.toFixed(2)+' m · error '+precisionBest.error.toFixed(2)+' m':'No valid throw yet';
+  summary='<p>Target: <strong>'+TARGETS[targetIndex].toFixed(2)+' m</strong><br>'+bestText+'<br>Banked retries: '+precisionBank+'</p>';
+  const freeRetry=!result.valid&&!precisionFreeUsed&&precisionAttempts.filter(x=>x.target===targetIndex).length===1;
+  if(freeRetry)buttons+='<button class="primary" data-action="freeRetry">FREE FOUL RETRY</button>';
+  if(precisionBank>0)buttons+='<button data-action="bankRetry">RETRY (-1 BANK)</button>';
+  buttons+='<button class="primary" data-action="next">'+(targetIndex===5?'FINISH CHALLENGE':'ACCEPT & NEXT')+'</button><button data-action="menu">HOME</button>';
+ }
+ $('message').classList.add('results');
+ $('message').innerHTML='<h2>'+heading+'</h2><div class="result">'+score+'</div><p>'+info+'</p>'+summary+chartsHTML()+'<div class="result-actions"><button data-action="details">SHOW GRAPHS</button>'+buttons+'</div>';
+ if(gameMode==='practice'){$('detailCharts').classList.remove('is-collapsed');$('message').querySelector('[data-action="details"]').textContent='HIDE GRAPHS';}
+ drawTelemetry();$('message').classList.remove('hide');updateMiniBoard();
+}
+function handleResultAction(e){const b=e.target.closest('[data-action],.retry-in-message');if(!b)return;const a=b.dataset.action||'next';
+ if(a==='details'){const c=$('detailCharts');c.classList.toggle('is-collapsed');b.textContent=c.classList.contains('is-collapsed')?'SHOW GRAPHS':'HIDE GRAPHS';if(!c.classList.contains('is-collapsed'))drawTelemetry();return}
+ if(a==='menu'){showModeMenu();return}
+ if(a==='freeRetry'&&gameMode==='precision'&&!precisionFreeUsed&&precisionAttempts.filter(x=>x.target===targetIndex).length===1&&!precisionAttempts[precisionAttempts.length-1].valid){precisionFreeUsed=true;begin();updateMiniBoard();return}
+ if(a==='bankRetry'&&gameMode==='precision'&&precisionBank>0){precisionBank--;begin();updateMiniBoard();return}
+ if(a!=='next')return;
+ if(gameMode==='competition'){
+  if(playerIndex<players.length-1)playerIndex++;else{playerIndex=0;roundIndex++}
+  if(roundIndex>=6){showCompetitionFinal();return}
+ }else if(gameMode==='precision'){
+  if(!precisionBest){precisionBest={distance:null,error:30};} // fixed foul/no-mark error
+  const summary=precisionBest;
+  if(!windowPrecisionScores)windowPrecisionScores=[];
+  windowPrecisionScores[targetIndex]={...summary,target:TARGETS[targetIndex]};
+  targetIndex++;precisionBest=null;precisionFreeUsed=false;
+  if(targetIndex>=TARGETS.length){showPrecisionFinal();return}
+ }
+ begin();updateMiniBoard();
+}
+let windowPrecisionScores=[];
+function showCompetitionFinal(){gameFinished=true;mode='result';$('miniBoard').hidden=true;
+ const leaderboard=players.map((name,i)=>({name,best:Math.max(0,...competitionResults[i].filter(Number.isFinite)),attempts:competitionResults[i]})).sort((a,b)=>b.best-a.best);
+ let html='<h2>COMPETITION RESULTS</h2><table class="result-table"><tr><th>#</th><th>Player</th><th>Best</th></tr>';
+ leaderboard.forEach((p,i)=>html+='<tr><td>'+(i+1)+'</td><td>'+escapeText(p.name)+'</td><td>'+(p.best?p.best.toFixed(2)+' m':'NO MARK')+'</td></tr>');
+ html+='</table><div class="result-actions"><button class="primary" data-action="menu">HOME / PLAY AGAIN</button></div>';
+ $('message').classList.add('results');$('message').innerHTML=html;$('message').classList.remove('hide');
+}
+function showPrecisionFinal(){gameFinished=true;mode='result';$('miniBoard').hidden=true;
+ const total=windowPrecisionScores.reduce((s,x)=>s+(x?.error??30),0);
+ let html='<h2>PRECISION RESULTS</h2><div class="result">'+total.toFixed(2)+' m</div><p>Total absolute target error · lower is better</p><table class="result-table"><tr><th>Target</th><th>Best</th><th>Error</th></tr>';
+ windowPrecisionScores.forEach(x=>html+='<tr><td>'+x.target.toFixed(2)+'</td><td>'+(x.distance===null?'FOUL':x.distance.toFixed(2))+'</td><td>'+x.error.toFixed(2)+'</td></tr>');
+ html+='</table><div class="result-actions"><button class="primary" data-action="menu">HOME / PLAY AGAIN</button></div>';
+ $('message').classList.add('results');$('message').innerHTML=html;$('message').classList.remove('hide');
+}
+configureMenu();
+
+function drawTelemetry(){
+ const records=telemetry.filter(q=>Number.isFinite(q.speed)&&Number.isFinite(q.radius));
+ if(records.length<2)return;
+ const end=Math.max(5.01,Math.min(6,turns));
+ for(const [id,key,color] of [['speedChart','speed','#ffcb73'],['radiusChart','radius','#67efc9']]){
+  const el=$(id);if(!el)continue;const pxW=Math.max(250,Math.floor(el.getBoundingClientRect().width*2));el.width=pxW;el.height=184;
+  const g=el.getContext('2d'), w=el.width,h=el.height,L=24,R=w-8,T=19,B=h-21;
+  const X=t=>L+Math.max(0,Math.min(1,t/end))*(R-L);
+  const maxVal=Math.max(key==='speed'?12:100,...records.map(a=>a[key]))*1.10;
+  const Y=v=>B-Math.max(0,Math.min(1,v/maxVal))*(B-T);
+  g.fillStyle='#112332';g.fillRect(0,0,w,h);
+  for(let i=0;i<Math.ceil(end);i++){
+    const x0=X(i),x1=X(Math.min(end,i+1));
+    g.fillStyle=i<2?'#244c47':'#294053';g.fillRect(x0,T,x1-x0,B-T);
+    g.fillStyle='#cbd6dc';g.font='bold 15px system-ui';g.textAlign='center';
+    g.fillText(i<2?'W'+(i+1):'T'+(i-1),(x0+x1)/2,14);
+    g.strokeStyle='#ffffff40';g.beginPath();g.moveTo(x0,T);g.lineTo(x0,B);g.stroke();
+  }
+  for(let k=1;k<records.length;k++){
+    const a=records[k-1],b=records[k];if(a.turn<2||!b.single)continue;
+    const x0=X(a.turn),x1=X(b.turn);g.fillStyle='#9257bd70';g.fillRect(x0,T,Math.max(1,x1-x0),B-T);
+  }
+  g.strokeStyle='#ffffff24';g.lineWidth=1;
+  for(let k=0;k<3;k++){const yy=T+(B-T)*k/2;g.beginPath();g.moveTo(L,yy);g.lineTo(R,yy);g.stroke()}
+  g.fillStyle='#bacbd0';g.textAlign='right';g.font='13px system-ui';g.fillText(maxVal.toFixed(0),L-4,T+6);g.fillText('0',L-4,B);
+  g.beginPath();let drew=false;
+  for(const q of records){if(q.turn>end)continue;const x=X(q.turn),y=Y(q[key]);if(!drew){g.moveTo(x,y);drew=true}else g.lineTo(x,y)}
+  g.strokeStyle=color;g.lineWidth=3;g.lineJoin='round';g.stroke();
+ }
+}
+
+function drawFlight(){
+  if(!flight)return;
+  const f=flight;
+  // Keep the released ball on screen only until it enters the fixed HUD.
+  // The flight's actual landing coordinates and scoring remain untouched.
+  const hudBottom=($('phase').closest('.hud')?.getBoundingClientRect().bottom||130)/scale;
+  const hideY=Math.min(f.start.y-12,hudBottom+ballRadius+2);
+  // Follow the actual ball-orbit tangent. Do not bend a sideways or
+  // downward release up toward the HUD; sector scoring uses this same vector.
+  const originalSpeed=Math.hypot(f.vx,f.vy)||1;
+  const visualSpeed=Math.max(145,Math.min(690,originalSpeed*0.55));
+  const dx=f.vx/originalSpeed*visualSpeed*f.t;
+  const dy=f.vy/originalSpeed*visualSpeed*f.t;
+  ball.x=f.start.x+dx;
+  ball.y=f.start.y+dy;
+  // Upward throws disappear under the HUD; other directions leave the
+  // playing field naturally rather than being redirected upward.
+  f.hidden=(f.vy<0 && ball.y<=hideY) || ball.x< -ballRadius ||
+    ball.x>W+ballRadius || ball.y>H+ballRadius || ball.y< -ballRadius;
+  // A short, fading trace shows the outgoing direction and remains visible
+  // during the brief pause after the ball disappears under the top HUD.
+  if(!f.hidden){
+    const last=trail[trail.length-1];
+    if(!last||Math.hypot(last.x-ball.x,last.y-ball.y)>3){
+      trail.push({x:ball.x,y:ball.y});
+      if(trail.length>85)trail.shift();
+    }
+  }
+  if(f.hidden&&f.exitAt===undefined)f.exitAt=f.t;
+  if(!f.final&&((f.hidden&&f.t-f.exitAt>=0.65)||f.t>=4.5)){
+    f.final=true;mode='result';
+    // Check the actual landing MARK against the drawn sector, not just flight direction.
+    // The rays extend from the circle's front rim at +/-17.46 degrees; if extended
+    // backward, both meet at the throwing-circle center. The landing point must
+    // lie forward of the rim and between those extended rays.
+    const sectorLimit=f.landingForwardM*Math.tan(SECTOR_HALF_ANGLE);
+    // Playability concession: 9% extra tolerance only to the LEFT of the sector.
+    const extraLeft=startDir<=0?1.09:1;
+    const extraRight=startDir>0?1.09:1;
+    const inSector=f.landingForwardM>=1.0675*Math.cos(SECTOR_HALF_ANGLE)
+      &&f.landingLateralM<=sectorLimit*extraRight && f.landingLateralM>=-sectorLimit*extraLeft;
+    const valid=turns>=5.0&&inSector;
+    const title=valid?'THROW COMPLETE':turns<5.0?'EARLY RELEASE':!inSector?'OUT OF SECTOR':'NO MARK';
+    const score=valid?f.distance.toFixed(2)+' m':'NO MARK';
+    resolveAttempt({valid,reason:title,distance:valid?f.distance:null,speed:f.speed,foul:false});
+    setHint('Touch drives the handle; the independently simulated ball determines the release velocity.');
+  }
+}
+function frame(ts){if(!lastFrame)lastFrame=ts;const delta=Math.min(.06,(ts-lastFrame)/1000);lastFrame=ts;if(mode==='playing'&&!helpOpen){const hvx=(handle.x-simulatedHandle.x)/Math.max(delta,.008),hvy=(handle.y-simulatedHandle.y)/Math.max(delta,.008);simulatedHandle={...handle};acc=Math.min(.08,acc+delta);while(acc>=1/120&&mode==='playing'){physics(1/120,hvx,hvy);acc-=1/120}}else acc=0;if(mode==='flight')flight.t+=delta;if(toastUntil&&ts>toastUntil){$('toast').style.opacity=0;toastUntil=0}render();updateHUD();requestAnimationFrame(frame)}
+reset();requestAnimationFrame(frame);
+})();
+</script></body></html>
