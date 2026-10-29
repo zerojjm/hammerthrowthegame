@@ -53,11 +53,44 @@
 .mode-panel .mode-choice.active{background:#2e505a;border:2px solid #e9a46a;color:#fff;box-shadow:inset 4px 0 0 #e9a46a}
 .mode-panel button.primary{background:#e6a66f;color:#242a2c;border-color:#f4be8e}
 .mode-panel button:focus-visible{outline:2px solid #f4be8e;outline-offset:2px}
+
+/* Additional home controls, records, and celebratory speech bubble */
+.home-quick{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:11px}
+.home-quick button{flex:1;min-width:110px;display:flex;align-items:center;justify-content:center;gap:7px;background:#25414b;border:1px solid #d1a47a88;color:#fff}
+.home-quick button:hover{border-color:#ffd0a4}
+#recordsShade{z-index:35}
+#recordsShade .mode-panel{max-width:380px}
+#recordsTable{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+#recordsTable td,#recordsTable th{border-bottom:1px solid #ffffff26;text-align:left;padding:8px 5px}
+#recordsTable td:last-child,#recordsTable th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+#recordsAverage{margin-top:14px;font-weight:700;color:#ffd2a0}
+#roarBubble{position:fixed;z-index:8;left:50%;top:calc(43% - 45px);transform:translate(-50%,-50%) rotate(-3deg);font-size:clamp(23px,6.7vw,42px);font-weight:1000;letter-spacing:1px;color:#fff6d6;background:#d71920;clip-path:polygon(50% 0%,57% 13%,67% 2%,70% 17%,83% 8%,84% 24%,99% 23%,92% 38%,100% 50%,91% 61%,98% 77%,83% 77%,82% 93%,69% 83%,58% 100%,50% 86%,39% 99%,33% 84%,17% 93%,17% 77%,2% 76%,9% 61%,0% 49%,9% 37%,2% 22%,17% 23%,18% 7%,32% 17%,41% 2%);padding:26px 30px;text-shadow:2px 2px #6a0509;pointer-events:none;animation:roarIn .22s ease-out;filter:drop-shadow(0 9px 8px #0008)}
+#roarBubble.small-roar{top:calc(43% - 22px);font-size:clamp(12px,3.4vw,21px);padding:13px 15px;letter-spacing:.5px;filter:drop-shadow(0 5px 5px #0007)}
+#roarBubble::before{content:'';position:absolute;inset:8px;background:#a80d16;clip-path:inherit;z-index:-1}
+#roarBubble span{position:relative;z-index:1}
+#recordsShade [data-records].active{background:#e6a66f;border:2px solid #ffe1bd;color:#202b30;font-weight:900;box-shadow:inset 0 -3px 0 #b65d26}
+#recordsTable td:last-child,#recordsTable th:last-child{text-align:left;font-size:11px;white-space:nowrap}
+#recordsTable td:nth-child(2),#recordsTable th:nth-child(2){text-align:right;font-variant-numeric:tabular-nums}
+#recordsShade .mode-panel{max-width:430px}
+.new-record{background:#ffe1a01c;color:#ffd38e!important;border:1px solid #eab36e;border-radius:9px;padding:9px;font-weight:800;text-align:center}
+
+
+/* Records: use available popup width; date in middle, right-aligned distance. */
+#recordsShade .mode-panel{width:min(96vw,510px);max-width:510px;padding-left:14px;padding-right:14px}
+#recordsTable{width:100%;table-layout:fixed;font-variant-numeric:tabular-nums}
+#recordsTable th,#recordsTable td{padding:10px 4px;font-size:12px}
+#recordsTable th:first-child,#recordsTable td:first-child{width:12%;text-align:left}
+#recordsTable th:nth-child(2),#recordsTable td:nth-child(2){width:56%;text-align:left;font-size:12px;white-space:nowrap}
+#recordsTable th:last-child,#recordsTable td:last-child{width:32%;text-align:right;font-size:13px;font-weight:750;white-space:nowrap;padding-right:1px}
+
+#roarBubble[hidden]{display:none}
+@keyframes roarIn{from{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(-12deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
 </style></head>
-<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.0</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
+<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.2</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
 <div id="message" class="message"><h2>Feel the hammer.</h2><p>Touch the <strong>green guide circle</strong>, then trace <strong>two winds</strong> followed by <strong>three or four larger turns</strong>.<br><br>Keep your motion smooth. Stay near the guide; inside reduces reach, outside is capped, but staying beyond <strong>200% outside causes a foul</strong>.<br><br><strong>Lift your finger to release.</strong></p><div class="legend"><span><i class="dot" style="background:#59dec7"></i>Handle guide</span><span><i class="dot" style="background:#f0c16c"></i>Hammer ball</span></div></div>
 <div id="toast"></div><div class="foot"><div class="instructions"><span id="hint">Move the handle smoothly to build hammer speed.</span><button type="button" class="help-trigger" id="helpOpen" aria-label="How to play" title="How to play">?</button></div><div class="controls"><button id="reset">RESET</button><button class="primary" id="start">START</button></div></div>
 <div id="helpShade" class="help-shade" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle"><section class="help-panel"><div class="help-heading"><h2 id="helpTitle">How to play</h2><button type="button" id="helpClose" class="help-close" aria-label="Close help">CLOSE ×</button></div><div class="help-body">
+<p>Control the hammer, build speed through smooth rotations, and release at the right moment. Smooth acceleration and a stable hammer orbit are the keys to a long throw.</p>
 <h3>Getting started</h3><p>Press START. Touch near the 0° START marker and trace the green handle guide. Your finger controls the handle; the hammer ball follows under its own inertia. Make two preliminary winds, then three or four full turns. Lift your finger to release.</p>
 <h3>Build speed smoothly</h3><p>Accelerate gradually and follow the moving handle guide. During turns, the athlete advances through the throwing circle. Staying close to the optimal guide radius helps preserve a long hammer orbit. Moving too far outside the guide causes a foul.</p>
 <h3>Both throwing directions</h3><p>Start at the bottom and rotate either counterclockwise (right-handed) or clockwise (left-handed). The game detects the direction during the first wind and mirrors single support, uphill/downhill timing, and the small sector allowance automatically. Keep rotating in the chosen direction.</p><h3>Double support (DS): drive the hammer</h3><p>The easiest time to accelerate is <strong>immediately after single support ends</strong>, on the descending side, until the low point at <strong>0°</strong>. You can continue adding speed after the low point, until the next single-support phase begins, but uphill acceleration becomes more demanding.</p>
@@ -66,15 +99,16 @@
 <h3>Release and results</h3><p>Release after at least three complete turns (two winds plus three turns) by lifting your finger. The ball flies along the tangent to its actual orbit. The result shows distance and charts for ball speed and orbit radius; purple chart bands indicate single support.</p>
 <p style="margin-top:20px;color:#a6bdc7">Created by Tero Mäkäläinen</p>
 </div></section></div>
-<div id="miniBoard" class="mini-board" hidden></div>
+<div id="miniBoard" class="mini-board" hidden></div><div id="roarBubble" hidden role="status" aria-live="polite"><span>ROAAARRR!</span></div>
+<div id="recordsShade" class="mode-shade" hidden role="dialog" aria-modal="true" aria-label="Local records"><div class="mode-panel"><h1>🏆 Records</h1><p>Five best results saved on this browser.</p><div class="mode-row"><button type="button" data-records="women">4 kg</button><button type="button" data-records="men">7.26 kg</button><button type="button" data-records="challenge">Challenge</button></div><table id="recordsTable"><thead><tr><th>#</th><th>Date / time</th><th id="recordHeading">Distance</th></tr></thead><tbody id="recordsBody"></tbody></table><div id="recordsAverage"></div><div class="result-actions"><button id="recordsClose" type="button" class="primary">CLOSE</button></div></div></div>
 <div id="modeShade" class="mode-shade"><div class="mode-panel">
-<h1>Hammer throw the game</h1><p>Control the hammer, build speed through smooth rotations, and release at the right moment. Choose a hammer weight and a game mode to begin.</p>
+<h1>Hammer throw the game</h1><p>Choose a hammer weight and a game mode to begin. Click "?" for instructions.</p>
 <h3>Hammer weight</h3><div class="mode-row"><button id="pickWomen" class="mode-choice active" type="button">4.00 kg</button><button id="pickMen" class="mode-choice" type="button">7.26 kg</button></div>
-<h3>Game mode</h3><div class="mode-choices"><button class="mode-choice active" data-mode="practice">PRACTICE<small>Unlimited throws and technique graphs</small></button><button class="mode-choice" data-mode="competition">COMPETITION<small>1–8 local players · Six attempts per player</small></button><button class="mode-choice" data-mode="precision">PRECISION CHALLENGE<small>Six distance targets · Three banked retries</small></button></div>
+<h3>Game mode</h3><div class="mode-choices"><button class="mode-choice active" data-mode="practice">PRACTICE<small>Unlimited throws and technique graphs</small></button><button class="mode-choice" data-mode="competition">COMPETITION<small>1–8 local players · Six attempts per player</small></button><button class="mode-choice" data-mode="precision">PRECISION CHALLENGE<small>Five distance targets · Three banked retries</small></button></div>
 <div id="playerSetup" class="mode-advanced" hidden><label for="playerNames">Player names (one per line, maximum 8)</label><textarea id="playerNames" rows="3" style="width:100%;background:#08202c;color:white;border-radius:9px;padding:9px;touch-action:pan-y">Player 1
 Player 2</textarea></div>
-<div id="precisionSetup" class="mode-advanced" hidden><p>Targets: 35, 45, 55, 60, 65 and 75 m. One free retry after a foul per target; additional retries or retries after valid throws spend the shared bank of three. The best valid result for each target counts.</p></div>
-<div class="mode-row" style="margin-top:15px"><button id="launchMode" class="primary">PLAY</button><button id="homeHelp" type="button" aria-label="How to play" title="How to play" style="flex:0 0 48px;min-width:48px;font-size:19px">?</button></div><p class="note">Created by Tero Mäkäläinen</p>
+<div id="precisionSetup" class="mode-advanced" hidden><p>Targets: 35, 45, 55, 65 and 75 m. One free retry after a foul per target; additional retries or retries after valid throws spend the shared bank of three. The best valid result for each target counts.</p></div>
+<div class="home-quick"><button id="recordsOpen" type="button">🏆 RECORDS</button><button id="donateOpen" type="button">♥ DONATE</button></div><div class="mode-row" style="margin-top:15px"><button id="launchMode" class="primary">PLAY</button><button id="homeHelp" type="button" aria-label="How to play" title="How to play" style="flex:0 0 48px;min-width:48px;font-size:19px">?</button></div><p class="note">Created by Tero Mäkäläinen</p>
 </div></div>
 <script>
 (()=>{'use strict';
@@ -92,7 +126,38 @@ const HAMMERS={women:{mass:4,drive:1,response:1,shirt:'#c53d49',character:'woman
 let hammerType='women';
 let gameMode='practice', chosenMode='practice', gameStarted=false, gameFinished=false;
 let players=[], playerIndex=0, roundIndex=0, competitionResults=[];
-const TARGETS=[35,45,55,60,65,75];
+const TARGETS=[35,45,55,65,75];
+// Persistent anonymous per-browser records. Local storage is keyed by this site's origin.
+const RECORDS_KEY='hammer_throw_records_v3_2',LEGACY_RECORDS_KEY='hammer_throw_records_v3_1',GAME_VERSION='3.2';
+let savedRecords={women:[],men:[],challenge:[]},activeRecordTab='women',recordSeq=0;
+try{
+ const raw=localStorage.getItem(RECORDS_KEY)||localStorage.getItem(LEGACY_RECORDS_KEY)||'{}';
+ const stored=JSON.parse(raw);
+ for(const k of Object.keys(savedRecords))if(Array.isArray(stored[k]))savedRecords[k]=stored[k].map(x=>{
+  if(typeof x==='number')return {value:x,date:null,version:'3.1 (legacy)',id:'legacy-'+(++recordSeq)};
+  if(x&&Number.isFinite(x.value))return {value:x.value,date:typeof x.date==='string'?x.date:null,version:String(x.version||'unknown'),id:String(x.id||'legacy-'+(++recordSeq))};
+  return null;
+ }).filter(x=>x&&Number.isFinite(x.value)&&x.value>=0).slice(0,5);
+}catch(e){}
+function saveRecord(category,value){
+ if(!Number.isFinite(value)||value<0||!savedRecords[category])return null;
+ const entry={value:Number(value.toFixed(2)),date:new Date().toISOString(),version:GAME_VERSION,id:Date.now()+'-'+(++recordSeq)};
+ const a=savedRecords[category];a.push(entry);
+ a.sort((x,y)=>category==='challenge'?x.value-y.value:y.value-x.value);
+ a.length=Math.min(a.length,5);
+ try{localStorage.setItem(RECORDS_KEY,JSON.stringify(savedRecords))}catch(e){}
+ const index=a.findIndex(x=>x.id===entry.id);
+ return index>=0?index+1:null;
+}
+function recordDate(entry){if(!entry.date)return '—';const d=new Date(entry.date);return Number.isNaN(+d)?'—':d.toLocaleString(undefined,{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function showRecords(tab='women'){
+ activeRecordTab=tab;$('recordsShade').hidden=false;
+ document.querySelectorAll('[data-records]').forEach(b=>{const selected=b.dataset.records===tab;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
+ const a=savedRecords[tab],isChallenge=tab==='challenge';$('recordHeading').textContent=isChallenge?'Total error':'Distance';
+ $('recordsBody').innerHTML=Array.from({length:5},(_,i)=>{const e=a[i];return '<tr><td>'+(i+1)+'</td><td title="'+(e?escapeText(e.version):'')+'">'+(e?recordDate(e):'—')+'</td><td>'+(e?e.value.toFixed(2)+' m':'—')+'</td></tr>'}).join('');
+ $('recordsAverage').textContent=a.length?'Average of '+a.length+' result'+(a.length>1?'s':'')+': '+(a.reduce((x,y)=>x+y.value,0)/a.length).toFixed(2)+' m':'No records yet';
+}
+
 let targetIndex=0, precisionBank=3, precisionFreeUsed=false, precisionAttempts=[], precisionBest=null;
 let attemptResolved=false;
 
@@ -180,9 +245,9 @@ function center(t=turns){const p=Math.max(0,Math.min(1,(t-2)/4));return {x:W/2,y
 function opt(t=turns){const p=Math.max(0,Math.min(1,(t-2)/.36));return OPT_WIND+(OPT_TURN-OPT_WIND)*p}
 function point(e){return {x:e.clientX/scale,y:e.clientY/scale}}
 function setHint(s){$('hint').textContent='Move the handle smoothly to build hammer speed.'}
-function reset(){attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
+function reset(){$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
 function begin(){reset();mode='armed';$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
-function foul(msg){mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
+function foul(msg){$('roarBubble').hidden=true;mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
 function showToast(s){$('toast').textContent=s;$('toast').style.opacity=1;toastUntil=performance.now()+1900}
 function touchStart(e){lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
 function touchMove(e){if(e.pointerId!==pointer||mode!=='playing')return;e.preventDefault();const events=e.getCoalescedEvents?.()||[e];for(const ev of events){const p=point(ev),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),best=opt();finger=p;ratio=r/best;if(r>FAIL*best){if(!overRadiusSince)overRadiusSince=performance.now();if(performance.now()-overRadiusSince>280){foul('You stayed beyond 200% of the ideal handle radius.');return}}else overRadiusSince=0;const a=Math.atan2(p.y-c.y,p.x-c.x);let d=a-lastAngle;while(d>Math.PI)d-=TWO;while(d< -Math.PI)d+=TWO;lastAngle=a;
@@ -236,7 +301,20 @@ const landingLateralM=releaseLateralM+lateral;
 const landingForwardM=releaseForwardM+landed;
 speedM=ms;
 flight={t:0,hidden:false,time:Math.max(.65,airtime),distance:Math.max(0,landed),lateral,
-  landingLateralM,landingForwardM,speed:ms,fullDistance:distance,start:{...ball},vx,vy,final:false};trail=[];mode='flight';$('message').classList.add('hide');setHint('Released! The flight is calculated from scaled release velocity and direction.');}
+  landingLateralM,landingForwardM,speed:ms,fullDistance:distance,start:{...ball},vx,vy,final:false};
+// Determine the celebration immediately on release, not after the ball exits.
+const sectorBound=landingForwardM*Math.tan(SECTOR_HALF_ANGLE);
+const validCelebration=turns>=5.0&&landingForwardM>=1.0675*Math.cos(SECTOR_HALF_ANGLE)
+  &&landingLateralM<=sectorBound*(startDir>0?1.09:1)
+  &&landingLateralM>=-sectorBound*(startDir<=0?1.09:1);
+flight.roar=validCelebration&&flight.distance>80;
+flight.smallRoar=validCelebration&&flight.distance>=75&&flight.distance<=80;
+if(flight.roar||flight.smallRoar){
+  $('roarBubble').classList.toggle('small-roar',flight.smallRoar);
+  $('roarBubble').hidden=false;
+  try{if(navigator.vibrate&&!flight.smallRoar)navigator.vibrate(750)}catch(e){}
+}
+trail=[];mode='flight';$('message').classList.add('hide');setHint('Released! The flight is calculated from scaled release velocity and direction.');}
 function physics(dt,handVx,handVy){if(mode!=='playing'&&mode!=='armed')return;if(mode==='armed')return;simTime+=dt;
 // Capture the speed carried out of turn two. Later turns cannot fully make up
 // for a badly underpowered start just by spinning the finger extremely fast.
@@ -558,11 +636,15 @@ if(mode==='playing'){const rad=ratio;ctx.font='12px system-ui';ctx.fillStyle=rad
 
 
 // --- Game session state and mode screens (no external dependencies) ---
-function showModeMenu(){gameFinished=false;gameStarted=false;$('modeShade').hidden=false;$('message').classList.add('hide');$('miniBoard').hidden=true;mode='ready';pointer=null;}
+function showModeMenu(){$('roarBubble').hidden=true;gameFinished=false;gameStarted=false;$('modeShade').hidden=false;$('message').classList.add('hide');$('miniBoard').hidden=true;mode='ready';pointer=null;}
 function configureMenu(){
  $('pickWomen').onclick=()=>pickHammer('women');$('pickMen').onclick=()=>pickHammer('men');
  document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{chosenMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));$('playerSetup').hidden=chosenMode!=='competition';$('precisionSetup').hidden=chosenMode!=='precision'});
  $('launchMode').onclick=launchGame;
+ $('recordsOpen').onclick=()=>showRecords('women');
+ $('recordsClose').onclick=()=>$('recordsShade').hidden=true;
+ document.querySelectorAll('[data-records]').forEach(b=>b.onclick=()=>showRecords(b.dataset.records));
+ $('donateOpen').onclick=()=>window.open('https://ko-fi.com/zerojjm','_blank','noopener,noreferrer');
 }
 function pickHammer(type){hammerType=type;$('pickWomen').classList.toggle('active',type==='women');$('pickMen').classList.toggle('active',type==='men')}
 function launchGame(){gameMode=chosenMode;gameFinished=false;gameStarted=true;attemptResolved=false;
@@ -578,17 +660,17 @@ function updateMiniBoard(){let html='';if(gameMode==='competition'){
  const best=Math.max(0,...attempts.filter(Number.isFinite));
  html='<div class="board-title">ROUND '+(roundIndex+1)+'/6</div><div class="board-player">'+escapeText(name)+'</div><div class="board-best">Best '+(best?best.toFixed(2)+' m':'—')+'</div>';
  }else if(gameMode==='precision'){
- html='<strong>TARGET '+(targetIndex+1)+'/6</strong><br><strong>'+TARGETS[Math.min(targetIndex,5)].toFixed(2)+' m</strong><br>Bank: '+precisionBank+' retries<br>Free foul retry: '+(!precisionFreeUsed?'available':'used');
+ html='<strong>TARGET '+(targetIndex+1)+'/'+TARGETS.length+'</strong><br><strong>'+TARGETS[Math.min(targetIndex,TARGETS.length-1)].toFixed(2)+' m</strong><br>Bank: '+precisionBank+' retries<br>Free foul retry: '+(!precisionFreeUsed?'available':'used');
  }else {$('miniBoard').hidden=true;return;}
  $('miniBoard').innerHTML=html;$('miniBoard').hidden=false;
 }
 function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function chartsHTML(){return '<div class="charts is-collapsed" id="detailCharts"><div class="chartline"><span>BALL SPEED</span><span>m/s</span></div><canvas class="chart-canvas" id="speedChart"></canvas><div class="chartline"><span>HAMMER ORBIT RADIUS</span><span>px</span></div><canvas class="chart-canvas" id="radiusChart"></canvas><div class="chart-note">W1 · W2 · T1–T4 | purple = single support</div></div>'}
-function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true;
+function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true; const newRecordPlace=result.valid?saveRecord(hammerType,result.distance):null;
  const score=result.valid?result.distance.toFixed(2)+' m':'NO MARK';
  let heading=result.valid?'THROW COMPLETE':result.foul?'FOUL':escapeText(result.reason||'NO MARK');
  let info=result.valid?'Release speed: '+result.speed.toFixed(2)+' m/s':escapeText(result.reason||'No valid distance');
- let summary='',buttons='';
+ let summary='',buttons='';const recordNotice=newRecordPlace?'<p class="new-record">🏆 TOP 5 RECORD — #'+newRecordPlace+' ('+(hammerType==='women'?'4 kg':'7.26 kg')+')</p>':'';
  if(gameMode==='practice'){
   buttons='<button class="primary" data-action="next">RESTART THROW</button><button data-action="menu">HOME</button>';
  }else if(gameMode==='competition'){
@@ -608,10 +690,10 @@ function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true;
   const freeRetry=!result.valid&&!precisionFreeUsed&&precisionAttempts.filter(x=>x.target===targetIndex).length===1;
   if(freeRetry)buttons+='<button class="primary" data-action="freeRetry">FREE FOUL RETRY</button>';
   if(precisionBank>0)buttons+='<button data-action="bankRetry">RETRY (-1 BANK)</button>';
-  buttons+='<button class="primary" data-action="next">'+(targetIndex===5?'FINISH CHALLENGE':'ACCEPT & NEXT')+'</button><button data-action="menu">HOME</button>';
+  buttons+='<button class="primary" data-action="next">'+(targetIndex===TARGETS.length-1?'FINISH CHALLENGE':'ACCEPT & NEXT')+'</button><button data-action="menu">HOME</button>';
  }
  $('message').classList.add('results');
- $('message').innerHTML='<h2>'+heading+'</h2><div class="result">'+score+'</div><p>'+info+'</p>'+summary+chartsHTML()+'<div class="result-actions"><button data-action="details">SHOW GRAPHS</button>'+buttons+'</div>';
+ $('message').innerHTML='<h2>'+heading+'</h2><div class="result">'+score+'</div><p>'+info+'</p>'+recordNotice+summary+chartsHTML()+'<div class="result-actions"><button data-action="details">SHOW GRAPHS</button>'+buttons+'</div>';
  if(gameMode==='practice'){$('detailCharts').classList.remove('is-collapsed');$('message').querySelector('[data-action="details"]').textContent='HIDE GRAPHS';}
  drawTelemetry();$('message').classList.remove('hide');updateMiniBoard();
 }
@@ -643,8 +725,8 @@ function showCompetitionFinal(){gameFinished=true;mode='result';$('miniBoard').h
  $('message').classList.add('results');$('message').innerHTML=html;$('message').classList.remove('hide');
 }
 function showPrecisionFinal(){gameFinished=true;mode='result';$('miniBoard').hidden=true;
- const total=windowPrecisionScores.reduce((s,x)=>s+(x?.error??30),0);
- let html='<h2>PRECISION RESULTS</h2><div class="result">'+total.toFixed(2)+' m</div><p>Total absolute target error · lower is better</p><table class="result-table"><tr><th>Target</th><th>Best</th><th>Error</th></tr>';
+ const total=windowPrecisionScores.reduce((s,x)=>s+(x?.error??30),0);const challengeRecordPlace=saveRecord('challenge',total);
+ let html='<h2>PRECISION RESULTS</h2><div class="result">'+total.toFixed(2)+' m</div><p>Total absolute target error · lower is better</p>'+(challengeRecordPlace?'<p class="new-record">🏆 TOP 5 CHALLENGE — #'+challengeRecordPlace+'</p>':'')+'<table class="result-table"><tr><th>Target</th><th>Best</th><th>Error</th></tr>';
  windowPrecisionScores.forEach(x=>html+='<tr><td>'+x.target.toFixed(2)+'</td><td>'+(x.distance===null?'FOUL':x.distance.toFixed(2))+'</td><td>'+x.error.toFixed(2)+'</td></tr>');
  html+='</table><div class="result-actions"><button class="primary" data-action="menu">HOME / PLAY AGAIN</button></div>';
  $('message').classList.add('results');$('message').innerHTML=html;$('message').classList.remove('hide');
@@ -711,8 +793,8 @@ function drawFlight(){
     }
   }
   if(f.hidden&&f.exitAt===undefined)f.exitAt=f.t;
-  if(!f.final&&((f.hidden&&f.t-f.exitAt>=0.65)||f.t>=4.5)){
-    f.final=true;mode='result';
+  if(!f.final&&((f.hidden&&f.t-f.exitAt>=(f.roar?2.25:f.smallRoar?1.73:0.65))||f.t>=4.5)){
+    f.final=true;mode='result';$('roarBubble').hidden=true;
     // Check the actual landing MARK against the drawn sector, not just flight direction.
     // The rays extend from the circle's front rim at +/-17.46 degrees; if extended
     // backward, both meet at the throwing-circle center. The landing point must
