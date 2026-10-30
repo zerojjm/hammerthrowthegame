@@ -85,18 +85,25 @@
 
 #roarBubble[hidden]{display:none}
 @keyframes roarIn{from{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(-12deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
+/* Intro overlay settings and soft touch-path animation. */
+.tutorial-setting{margin-top:20px;padding:12px;border:1px solid #ffffff35;background:#ffffff0b;border-radius:10px}
+.tutorial-setting label{display:flex;align-items:center;gap:9px;font-weight:700;line-height:1.35;cursor:pointer}
+.tutorial-setting input{width:19px;height:19px;flex:none;accent-color:#e8a567}
+.tutorial-setting small{display:block;margin:7px 0 0 28px;color:#a9c9cc;line-height:1.35}
 </style></head>
-<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.2</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
-<div id="message" class="message"><h2>Feel the hammer.</h2><p>Touch the <strong>green guide circle</strong>, then trace <strong>two winds</strong> followed by <strong>three or four larger turns</strong>.<br><br>Keep your motion smooth. Stay near the guide; inside reduces reach, outside is capped, but staying beyond <strong>200% outside causes a foul</strong>.<br><br><strong>Lift your finger to release.</strong></p><div class="legend"><span><i class="dot" style="background:#59dec7"></i>Handle guide</span><span><i class="dot" style="background:#f0c16c"></i>Hammer ball</span></div></div>
-<div id="toast"></div><div class="foot"><div class="instructions"><span id="hint">Move the handle smoothly to build hammer speed.</span><button type="button" class="help-trigger" id="helpOpen" aria-label="How to play" title="How to play">?</button></div><div class="controls"><button id="reset">RESET</button><button class="primary" id="start">START</button></div></div>
+<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.3</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
+<div id="message" class="message hide"></div>
+<div id="toast"></div><div class="foot"><div class="instructions"><span id="hint">Move the handle smoothly to build hammer speed.</span><button type="button" class="help-trigger" id="helpOpen" aria-label="How to play" title="How to play">?</button></div><div class="controls"><button id="reset">HOME</button><button class="primary" id="start">START</button></div></div>
 <div id="helpShade" class="help-shade" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle"><section class="help-panel"><div class="help-heading"><h2 id="helpTitle">How to play</h2><button type="button" id="helpClose" class="help-close" aria-label="Close help">CLOSE ×</button></div><div class="help-body">
 <p>Control the hammer, build speed through smooth rotations, and release at the right moment. Smooth acceleration and a stable hammer orbit are the keys to a long throw.</p>
-<h3>Getting started</h3><p>Press START. Touch near the 0° START marker and trace the green handle guide. Your finger controls the handle; the hammer ball follows under its own inertia. Make two preliminary winds, then three or four full turns. Lift your finger to release.</p>
-<h3>Build speed smoothly</h3><p>Accelerate gradually and follow the moving handle guide. During turns, the athlete advances through the throwing circle. Staying close to the optimal guide radius helps preserve a long hammer orbit. Moving too far outside the guide causes a foul.</p>
+<p><strong>Be patient with acceleration.</strong> Start with slow, controlled throws and focus on finding the right rhythm rather than chasing distance. Learn to keep the hammer moving smoothly through each wind and turn. Give yourself a few attempts to get the feel of it—once the timing becomes natural, gradually build speed and aim for longer throws.</p>
+<h3>Getting started</h3><p>Press START. Touch near the 0° START marker and rotate smoothly. Keep your finger <strong>outside the green optimal handle guide</strong>, but <strong>inside the outer rejection limit at twice (2×) the guide radius</strong>. Beyond the optimal radius, the actual handle stays capped at the optimal radius; remaining beyond 2× causes a foul. Your finger drives the handle while the hammer ball follows with inertia. Make two preliminary winds, then three or four full turns. Lift to release.</p>
+<h3>Build speed smoothly</h3><p>Accelerate gradually and follow the moving handle guide. During turns, the athlete advances through the throwing circle. Staying just outside the optimal guide radius helps preserve a long hammer orbit. The outer rejection radius is <strong>twice the guide radius</strong>; staying beyond it causes a foul.</p>
 <h3>Both throwing directions</h3><p>Start at the bottom and rotate either counterclockwise (right-handed) or clockwise (left-handed). The game detects the direction during the first wind and mirrors single support, uphill/downhill timing, and the small sector allowance automatically. Keep rotating in the chosen direction.</p><h3>Double support (DS): drive the hammer</h3><p>The easiest time to accelerate is <strong>immediately after single support ends</strong>, on the descending side, until the low point at <strong>0°</strong>. You can continue adding speed after the low point, until the next single-support phase begins, but uphill acceleration becomes more demanding.</p>
 <h3>Single support (SS): match the ball</h3><p>During SS, the athlete has very little ability to add speed. Make your finger follow the hammer's existing pace instead of forcing it ahead. The ball naturally loses some speed as it travels uphill. Extended, excessive hammer lag during turns causes a loss-of-balance foul; momentary lag is allowed. When DS resumes, accelerate smoothly again.</p>
 <h3>Why radius matters</h3><p>If you accelerate the handle faster than the ball can follow, the ball lags and its effective orbit radius can shrink. This costs speed, especially at high speeds. Recovering a shortened orbit back to a larger radius can cost additional speed. The goal is to keep the <strong>ball radius as large and stable as possible</strong> throughout the throw.</p>
 <h3>Release and results</h3><p>Release after at least three complete turns (two winds plus three turns) by lifting your finger. The ball flies along the tangent to its actual orbit. The result shows distance and charts for ball speed and orbit radius; purple chart bands indicate single support.</p>
+<div class="tutorial-setting"><label><input type="checkbox" id="tutorialEnabled"> Show animated start guide for the next 5 valid throws</label><small>Turn this on again any time to restart the five-throw introduction.</small></div>
 <p style="margin-top:20px;color:#a6bdc7">Created by Tero Mäkäläinen</p>
 </div></section></div>
 <div id="miniBoard" class="mini-board" hidden></div><div id="roarBubble" hidden role="status" aria-live="polite"><span>ROAAARRR!</span></div>
@@ -114,6 +121,15 @@ Player 2</textarea></div>
 (()=>{'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');let helpOpen=false;const $=id=>document.getElementById(id);let W=390,H=680,scale=1,offX=0,offY=0,dpr=1;
 const TWO=Math.PI*2, wire=82, ballRadius=9, OPT_WIND=41, OPT_TURN=55, FAIL=2.0;
+// First-use onboarding: keep the cue until five valid throws have been recorded.
+const INTRO_KEY='hammer_throw_intro_v3_3';
+let tutorial={enabled:true,valid:0},introStartedAt=performance.now(),introFadeAt=-1;
+try{const stored=JSON.parse(localStorage.getItem(INTRO_KEY)||'null');if(stored&&typeof stored==='object')tutorial={enabled:!!stored.enabled,valid:Math.max(0,Math.min(5,Number(stored.valid)||0))};}catch(e){}
+function tutorialActive(){return tutorial.enabled&&tutorial.valid<5}
+function persistTutorial(){try{localStorage.setItem(INTRO_KEY,JSON.stringify(tutorial))}catch(e){}}
+function syncTutorialSetting(){const cb=document.getElementById('tutorialEnabled');if(cb)cb.checked=tutorialActive()}
+function noteValidThrow(){if(!tutorialActive())return;tutorial.valid++;if(tutorial.valid>=5)tutorial.enabled=false;persistTutorial();syncTutorialSetting()}
+
 // Canvas velocity to physical launch velocity: calibrated independently of visual orbit.
 const METERS_PER_PIXEL_PER_SECOND=0.020;
 // Gameplay flight calibration: report simulated hammer speed unchanged,
@@ -128,7 +144,7 @@ let gameMode='practice', chosenMode='practice', gameStarted=false, gameFinished=
 let players=[], playerIndex=0, roundIndex=0, competitionResults=[];
 const TARGETS=[35,45,55,65,75];
 // Persistent anonymous per-browser records. Local storage is keyed by this site's origin.
-const RECORDS_KEY='hammer_throw_records_v3_2',LEGACY_RECORDS_KEY='hammer_throw_records_v3_1',GAME_VERSION='3.2';
+const RECORDS_KEY='hammer_throw_records_v3_2',LEGACY_RECORDS_KEY='hammer_throw_records_v3_1',GAME_VERSION='3.3';
 let savedRecords={women:[],men:[],challenge:[]},activeRecordTab='women',recordSeq=0;
 try{
  const raw=localStorage.getItem(RECORDS_KEY)||localStorage.getItem(LEGACY_RECORDS_KEY)||'{}';
@@ -213,7 +229,14 @@ const SINGLE_SUPPORT_END=Math.PI/2+SECTOR_HALF_ANGLE+15*Math.PI/180;
 // startDir is positive for clockwise screen movement, negative for counterclockwise.
 function normalizedPhase(x){return ((x%TWO)+TWO)%TWO}
 function techniquePhase(geometricPhase){return startDir>0?normalizedPhase(Math.PI-geometricPhase):geometricPhase}
-function isSingleSupport(geometricPhase){const a=techniquePhase(geometricPhase);return a>=SINGLE_SUPPORT_START&&a<=SINGLE_SUPPORT_END}
+// First turn retains the original SS interval. Each subsequent turn
+// widens it 2 degrees at each end (fourth turn: 6 degrees each side).
+function supportBounds(){
+  const completedTurns=Math.max(0,Math.min(3,Math.floor(Math.max(0,turns-2)+1e-7)));
+  const expansion=completedTurns*2*Math.PI/180;
+  return {start:SINGLE_SUPPORT_START-expansion,end:SINGLE_SUPPORT_END+expansion};
+}
+function isSingleSupport(geometricPhase){const a=techniquePhase(geometricPhase),b=supportBounds();return a>=b.start&&a<=b.end}
 
 const VERTICAL_GRAVITY=215; // screen-units/s²; tangential component of gravity
 const SINGLE_SUPPORT_DRIVE=0.003; // very little positive drive during single support
@@ -245,11 +268,11 @@ function center(t=turns){const p=Math.max(0,Math.min(1,(t-2)/4));return {x:W/2,y
 function opt(t=turns){const p=Math.max(0,Math.min(1,(t-2)/.36));return OPT_WIND+(OPT_TURN-OPT_WIND)*p}
 function point(e){return {x:e.clientX/scale,y:e.clientY/scale}}
 function setHint(s){$('hint').textContent='Move the handle smoothly to build hammer speed.'}
-function reset(){$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
-function begin(){reset();mode='armed';$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
+function reset(){introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.add('hide');$('message').innerHTML='';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
+function begin(){reset();mode='armed';introStartedAt=performance.now();$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
 function foul(msg){$('roarBubble').hidden=true;mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
 function showToast(s){$('toast').textContent=s;$('toast').style.opacity=1;toastUntil=performance.now()+1900}
-function touchStart(e){lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
+function touchStart(e){lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;introFadeAt=performance.now();pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
 function touchMove(e){if(e.pointerId!==pointer||mode!=='playing')return;e.preventDefault();const events=e.getCoalescedEvents?.()||[e];for(const ev of events){const p=point(ev),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),best=opt();finger=p;ratio=r/best;if(r>FAIL*best){if(!overRadiusSince)overRadiusSince=performance.now();if(performance.now()-overRadiusSince>280){foul('You stayed beyond 200% of the ideal handle radius.');return}}else overRadiusSince=0;const a=Math.atan2(p.y-c.y,p.x-c.x);let d=a-lastAngle;while(d>Math.PI)d-=TWO;while(d< -Math.PI)d+=TWO;lastAngle=a;
 // Detect the first deliberate rotation from accumulated angular movement, not
 // a single tiny pointer delta (which can be jitter or a sideways initial touch).
@@ -276,7 +299,7 @@ if(startDir===0){
 angle=a;const newC=center(),rHandle=Math.min(r,opt());prevHandle={...handle};handle={x:newC.x+Math.cos(a)*rHandle,y:newC.y+Math.sin(a)*rHandle};
 }}
 function touchEnd(e){if(e.pointerId!==pointer)return;e.preventDefault();pointer=null;if(mode!=='playing')return;release()}
-canvas.addEventListener('pointerdown',touchStart);canvas.addEventListener('pointermove',touchMove);canvas.addEventListener('pointerup',touchEnd);canvas.addEventListener('pointercancel',touchEnd);window.addEventListener('blur',()=>{if(mode==='playing')release()});$('helpOpen').onclick=()=>{helpOpen=true;$('helpShade').hidden=false;};$('homeHelp').onclick=()=>$('helpOpen').click();$('helpClose').onclick=()=>{helpOpen=false;$('helpShade').hidden=true;};$('helpShade').addEventListener('click',e=>{if(e.target===$('helpShade')){$('helpClose').click()}});$('reset').onclick=()=>{if(gameMode==='practice')begin();else showModeMenu()};$('start').onclick=()=>{if(gameMode==='practice')begin();else if(!gameFinished)begin();else showModeMenu()};$('message').addEventListener('click',handleResultAction);
+canvas.addEventListener('pointerdown',touchStart);canvas.addEventListener('pointermove',touchMove);canvas.addEventListener('pointerup',touchEnd);canvas.addEventListener('pointercancel',touchEnd);window.addEventListener('blur',()=>{if(mode==='playing')release()});$('helpOpen').onclick=()=>{helpOpen=true;syncTutorialSetting();$('helpShade').hidden=false;};$('homeHelp').onclick=()=>$('helpOpen').click();$('helpClose').onclick=()=>{helpOpen=false;$('helpShade').hidden=true;};$('helpShade').addEventListener('click',e=>{if(e.target===$('helpShade')){$('helpClose').click()}});$('reset').onclick=()=>{if(pointer!==null){try{if(canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer)}catch(e){}}reset();showModeMenu();};$('start').onclick=()=>{if(gameMode==='practice')begin();else if(!gameFinished)begin();else showModeMenu()};$('message').addEventListener('click',handleResultAction);$('tutorialEnabled').addEventListener('change',e=>{tutorial={enabled:e.target.checked,valid:0};persistTutorial();syncTutorialSetting();introStartedAt=performance.now()});
 function release(){if(turns<.3){mode='armed';showToast('Build some rotation before releasing');return}
 // The hammer leaves along the tangent to its own orbit around the athlete,
 // NOT the tangent to the finger/handle path. Use the same velocity for the
@@ -398,11 +421,12 @@ const geometricPhase=normalizedPhase(-Math.atan2(ballFromCenterY,ballFromCenterX
 const phaseCCW=techniquePhase(geometricPhase);
 const fade=0.14; // radians; avoids abrupt jumps at support boundaries
 const smoothstep=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
-const supportEntry=smoothstep((phaseCCW-SINGLE_SUPPORT_START)/fade);
-const supportExit=1-smoothstep((phaseCCW-SINGLE_SUPPORT_END+fade)/fade);
+const support=supportBounds();
+const supportEntry=smoothstep((phaseCCW-support.start)/fade);
+const supportExit=1-smoothstep((phaseCCW-support.end+fade)/fade);
 const singleSupport=(turnBlend)*(supportEntry*supportExit);
 // Extra available drive just after the left sector ray, on the downhill side.
-const downhillPhase=smoothstep((phaseCCW-SINGLE_SUPPORT_END)/.26)*(1-smoothstep((phaseCCW-Math.PI*1.75)/.35));
+const downhillPhase=smoothstep((phaseCCW-support.end)/.26)*(1-smoothstep((phaseCCW-Math.PI*1.75)/.35));
 const positiveDriveFactor=(1-singleSupport*(1-SINGLE_SUPPORT_DRIVE))*(1+turnBlend*downhillPhase*(DOWNHILL_DRIVE_BONUS-1));
 // Extra loss of available drive once the hammer already carries substantial speed.
 // Applied only to turns, so the preliminary winds stay exactly as in v08.
@@ -525,7 +549,7 @@ if(turns>=2 && turnBlend>0.99){
   // this window, tapering the transition over 12 degrees at either boundary.
   // Keep the existing radius/energy penalties active throughout the turn.
   const ballPhase=techniquePhase(normalizedPhase(-ba));
-  const downhillStart=SINGLE_SUPPORT_END;
+  const downhillStart=supportBounds().end;
   const downhillEnd=3*Math.PI/2; // bottom / low point
   const ramp=12*Math.PI/180;
   const easing=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
@@ -572,14 +596,59 @@ if(turns>=2&&mode==='playing'){
   ctx.save();
   // Reflect the guide horizontally to match the mirrored clockwise support timing.
   if(startDir>0){ctx.translate(2*c.x,0);ctx.scale(-1,1)}
-  ctx.beginPath();ctx.arc(c.x,c.y,r+10,-SINGLE_SUPPORT_START,-SINGLE_SUPPORT_END,true);
-  ctx.arc(c.x,c.y,r-10,-SINGLE_SUPPORT_END,-SINGLE_SUPPORT_START,false);ctx.closePath();
+  const support=supportBounds();
+  ctx.beginPath();ctx.arc(c.x,c.y,r+10,-support.start,-support.end,true);
+  ctx.arc(c.x,c.y,r-10,-support.end,-support.start,false);ctx.closePath();
   ctx.fillStyle='#49306225';ctx.fill();
-  ctx.beginPath();ctx.arc(c.x,c.y,r,-SINGLE_SUPPORT_START,-SINGLE_SUPPORT_END,true);
+  ctx.beginPath();ctx.arc(c.x,c.y,r,-support.start,-support.end,true);
   ctx.strokeStyle='#ffd2a077';ctx.lineWidth=2;ctx.stroke();
   ctx.restore();
 }
-circle(c.x,c.y,out,null,'#b65e6366',1.1);ctx.save();ctx.setLineDash([6,6]);circle(c.x,c.y,r,null,'#53edce',2);ctx.restore();circle(c.x,c.y,r,'#56e6c20b');if(turns<.15){circle(c.x,c.y+r,5,'#fff4b4','#84542c',1);ctx.fillStyle='#ffffff';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('0° START',c.x,c.y+r+21)}
+// Onboarding limit appears only when enabled; after first contact it fades over 1.125 s.
+const introVisible=tutorialActive()&&gameStarted&&$('modeShade').hidden;
+const introAlpha=!introVisible?0:(mode==='armed'?1:(introFadeAt>=0?Math.max(0,1-(performance.now()-introFadeAt)/1125):0));
+if(introAlpha>0){
+ ctx.save();ctx.globalAlpha=introAlpha;
+ // Highlight the permitted annulus without obscuring the hammer or athlete.
+ ctx.beginPath();ctx.arc(c.x,c.y,out,0,TWO);ctx.arc(c.x,c.y,r,0,TWO,true);
+ ctx.fillStyle='#9ef7bd14';ctx.fill('evenodd');
+ ctx.setLineDash([7,6]);circle(c.x,c.y,out,null,'#f2d18a',2.3);ctx.setLineDash([]);
+ ctx.restore();
+}
+ctx.save();ctx.setLineDash([6,6]);circle(c.x,c.y,r,null,'#53edce',2);ctx.restore();circle(c.x,c.y,r,'#56e6c20b');
+if(introVisible&&mode==='armed'&&!helpOpen){
+ const elapsed=(performance.now()-introStartedAt)/1000;
+ // The solid fingertip is anchored to the real handle start position.
+ // A gentle two-second pulse tells beginners where to put their finger.
+ const sx=c.x,sy=c.y+r;
+ const pulse=0.5+0.5*Math.sin(elapsed*Math.PI*2/1.15);
+ ctx.save();
+ circle(sx,sy,8+pulse*4,'#fff2ce'+Math.round(35+pulse*40).toString(16).padStart(2,'0'),'#f4d18d',1.1);
+ circle(sx,sy,5.5,'#fff1c5','#b87b45',1.5);
+ ctx.restore();
+ if(elapsed>=2){
+   // The demonstration is deliberately faint and never replaces the real start marker.
+   const t=elapsed-2,progress=Math.min(1,t/0.75),blend=progress*progress*(3-2*progress);
+   const a=Math.PI/2-t*.65;
+   const touchR=r*(1+0.29*blend),px=c.x+Math.cos(a)*touchR,py=c.y+Math.sin(a)*touchR;
+   ctx.save();ctx.globalAlpha=0.30;
+   circle(px,py,9,'#fff6dd','#d78142',1.8);
+   circle(px,py,2.8,'#c98037');
+   // Short curved direction arrow immediately ahead of the moving demo touch.
+   const ahead=0.16,arcR=touchR+15;
+   ctx.beginPath();ctx.arc(c.x,c.y,arcR,a-0.02,a-ahead,true);
+   ctx.strokeStyle='#f8e7b2';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.stroke();
+   const tip=a-ahead,tx=c.x+arcR*Math.cos(tip),ty=c.y+arcR*Math.sin(tip);
+   const tangent=tip-Math.PI/2;
+   ctx.beginPath();ctx.moveTo(tx,ty);
+   ctx.lineTo(tx-7*Math.cos(tangent-0.48),ty-7*Math.sin(tangent-0.48));
+   ctx.moveTo(tx,ty);ctx.lineTo(tx-7*Math.cos(tangent+0.48),ty-7*Math.sin(tangent+0.48));
+   ctx.stroke();ctx.restore();
+ }
+ ctx.fillStyle='#fef5e2';ctx.font='bold 11px system-ui';ctx.textAlign='center';
+ ctx.fillText(elapsed<2?'TOUCH THE START HANDLE':'FOLLOW THE FAINT GUIDE • BETWEEN RINGS',fieldCenter.x,Math.min(H-104,fieldCenter.y+circleR+36));
+}
+if(turns<.15&&!(introVisible&&mode==='armed'&&!helpOpen)){circle(c.x,c.y+r,5,'#fff4b4','#84542c',1);ctx.fillStyle='#ffffff';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('0° START',c.x,c.y+r+21)}
 // Forward-progress ghost path.
 if(turns>=1.8){const c2=center(6);line(c.x,c.y,c2.x,c2.y,'#74cfbd66',1,[3,5])}
 // Compact support-phase label under the circle.
@@ -666,7 +735,7 @@ function updateMiniBoard(){let html='';if(gameMode==='competition'){
 }
 function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function chartsHTML(){return '<div class="charts is-collapsed" id="detailCharts"><div class="chartline"><span>BALL SPEED</span><span>m/s</span></div><canvas class="chart-canvas" id="speedChart"></canvas><div class="chartline"><span>HAMMER ORBIT RADIUS</span><span>px</span></div><canvas class="chart-canvas" id="radiusChart"></canvas><div class="chart-note">W1 · W2 · T1–T4 | purple = single support</div></div>'}
-function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true; const newRecordPlace=result.valid?saveRecord(hammerType,result.distance):null;
+function resolveAttempt(result){if(attemptResolved)return;attemptResolved=true;if(result.valid)noteValidThrow(); const newRecordPlace=result.valid?saveRecord(hammerType,result.distance):null;
  const score=result.valid?result.distance.toFixed(2)+' m':'NO MARK';
  let heading=result.valid?'THROW COMPLETE':result.foul?'FOUL':escapeText(result.reason||'NO MARK');
  let info=result.valid?'Release speed: '+result.speed.toFixed(2)+' m/s':escapeText(result.reason||'No valid distance');
