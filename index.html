@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0b1724"><title>Hammer throw the game — Version 3.0</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0b1724"><title>Hammer throw the game — Version 3.6</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#0b1724;color:#eef6f6;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;touch-action:none}#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}.hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;display:flex;flex-direction:column;gap:7px;pointer-events:none}.topline{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-size:16px;font-weight:850;letter-spacing:.5px}.tag{font-size:10px;color:#83e9da;letter-spacing:1.5px;font-weight:700}.pill{border:1px solid #ffffff33;background:#122b3add;border-radius:100px;padding:7px 10px;font-size:11px;font-weight:700}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.stat{background:#102a3bdf;border:1px solid #ffffff18;padding:9px 11px;border-radius:12px;backdrop-filter:blur(4px)}.stat span{display:block;font-size:10px;color:#a6b9c8;text-transform:uppercase;letter-spacing:1px}.stat b{display:block;font-size:17px;margin-top:2px;font-variant-numeric:tabular-nums}.progress{height:4px;background:#ffffff22;border-radius:10px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,#54d6c3,#e7b65b);width:0%}.foot{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));display:flex;align-items:flex-start;justify-content:space-between;gap:10px;pointer-events:none}.instructions{max-width:270px;font-size:12px;color:#b4cad5;line-height:1.45;background:#0e2635cf;padding:10px 12px;border-radius:12px;border:1px solid #ffffff18}.controls{display:flex;gap:6px;pointer-events:auto;transform:translateY(-29px)}.instructions{transform:translateY(-29px);display:flex;align-items:center;gap:8px}.instructions #hint{flex:1}button{color:#ebfaf8;font-weight:800;border:1px solid #ffffff33;background:#204352;min-height:40px;border-radius:11px;padding:0 13px;cursor:pointer}button.primary{color:#08302d;background:#6af1d5;border-color:#6af1d5}.message{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);width:min(90vw,340px);text-align:center;background:#0a1c2bee;border:1px solid #ffffff30;border-radius:20px;padding:22px 20px;box-shadow:0 16px 55px #0007;pointer-events:none;transition:opacity .15s}.message.hide{opacity:0;pointer-events:none}.message:not(.hide){pointer-events:auto}.message .retry-in-message{display:block;margin:18px auto 0;padding:0 24px;min-height:46px;font-size:15px}.message.results{width:min(94vw,410px);padding:14px 14px 16px;top:46%;max-height:82vh;overflow-y:auto}.message.results .result{font-size:32px;margin:2px 0}.message.results .retry-in-message{margin-top:9px}.charts{display:grid;gap:6px;margin-top:10px;text-align:left}.chartline{font-size:10px;color:#d8e6e8;font-weight:700;display:flex;justify-content:space-between}.chart-canvas{display:block;width:100%;height:92px;background:#101f2c;border:1px solid #ffffff25;border-radius:7px}.chart-note{font-size:9px;color:#b3c5ce;text-align:center}.message h2{margin:0 0 8px;font-size:24px}.message p{margin:0;color:#bdced6;font-size:13px;line-height:1.55}.message strong{color:#73efd9}.result{font-size:38px;font-weight:900;color:#77f2d9;margin:8px 0}#toast{position:fixed;left:50%;top:24%;transform:translateX(-50%);background:#742d2be8;color:#fff;padding:11px 15px;border-radius:10px;font-size:13px;font-weight:750;opacity:0;pointer-events:none;text-align:center;white-space:nowrap}.legend{display:flex;justify-content:center;gap:13px;font-size:10px;color:#b6d0d8;margin-top:3px}.dot{display:inline-block;height:8px;width:8px;border-radius:50%;margin-right:4px}.legend>span{white-space:nowrap}@media(max-height:620px){.hud{gap:4px}.stat{padding:6px 8px}.stat b{font-size:14px}.instructions{font-size:10px;padding:7px}.foot{bottom:7px}.message{top:45%}}
 
@@ -91,7 +91,7 @@
 .tutorial-setting input{width:19px;height:19px;flex:none;accent-color:#e8a567}
 .tutorial-setting small{display:block;margin:7px 0 0 28px;color:#a9c9cc;line-height:1.35}
 </style></head>
-<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.3</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
+<body><canvas id="game"></canvas><div class="hud"><div class="topline"><div><div class="tag">VERSION 3.6</div><div class="brand">Hammer throw the game</div></div><div id="phase" class="pill">READY · 0 / 6</div></div><div class="stats"><div class="stat"><span>Ball speed</span><b id="speed">0.0 m/s</b></div><div class="stat"><span>Hand radius</span><b id="radius">—</b></div><div class="stat"><span>Turns</span><b id="turns">0.00 / 6</b></div></div><div class="progress"><div id="progress"></div></div></div>
 <div id="message" class="message"><h2>Feel the hammer.</h2><p>Touch the <strong>green guide circle</strong>, then trace <strong>two winds</strong> followed by <strong>three or four larger turns</strong>.<br><br>Keep your motion smooth. Stay near the guide; inside reduces reach, outside is capped, but staying beyond <strong>200% outside causes a foul</strong>.<br><br><strong>Lift your finger to release.</strong></p><div class="legend"><span><i class="dot" style="background:#59dec7"></i>Handle guide</span><span><i class="dot" style="background:#f0c16c"></i>Hammer ball</span></div></div>
 <div id="toast"></div><div class="foot"><div class="instructions"><span id="hint">Move the handle smoothly to build hammer speed.</span><button type="button" class="help-trigger" id="helpOpen" aria-label="How to play" title="How to play">?</button></div><div class="controls"><button id="reset">HOME</button><button class="primary" id="start">START</button></div></div>
 <div id="helpShade" class="help-shade" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle"><section class="help-panel"><div class="help-heading"><h2 id="helpTitle">How to play</h2><button type="button" id="helpClose" class="help-close" aria-label="Close help">CLOSE ×</button></div><div class="help-body">
@@ -144,7 +144,7 @@ let gameMode='practice', chosenMode='practice', gameStarted=false, gameFinished=
 let players=[], playerIndex=0, roundIndex=0, competitionResults=[];
 const TARGETS=[35,45,55,65,75];
 // Persistent anonymous per-browser records. Local storage is keyed by this site's origin.
-const RECORDS_KEY='hammer_throw_records_v3_2',LEGACY_RECORDS_KEY='hammer_throw_records_v3_1',GAME_VERSION='3.3';
+const RECORDS_KEY='hammer_throw_records_v3_2',LEGACY_RECORDS_KEY='hammer_throw_records_v3_1',GAME_VERSION='3.6';
 let savedRecords={women:[],men:[],challenge:[]},activeRecordTab='women',recordSeq=0;
 try{
  const raw=localStorage.getItem(RECORDS_KEY)||localStorage.getItem(LEGACY_RECORDS_KEY)||'{}';
@@ -262,21 +262,80 @@ const OUTWARD_TECHNIQUE_LOSS=0.68; // re-extension costs more after a collapse
 const SHORT_RADIUS_LOSS=0.49;     // extra loss if orbit is substantially tucked in
 const MAX_TANGENTIAL_SPEED=1250; // numerical safeguard, not the primary limiter
 let directionProbe=0,reverseProbe=0;let lagExposure=0,lateCarryEfficiency=1,lateCarryCaptured=false;let telemetry=[],lastSample=-1;let previousOrbitRadius=0,recentRadiusCollapse=0,recoveryIndicator=0;let overRadiusSince=0;let mode='ready',pointer=null,angle=0,lastAngle=0,turns=0,startDir=0,handle={x:0,y:0},prevHandle={x:0,y:0},ball={x:0,y:0,vx:0,vy:0},finger={x:0,y:0},ratio=1,simTime=0,flight=null,lastFrame=0,acc=0, smoothness=1, speedM=0,toastUntil=0,trail=[],simulatedHandle={x:0,y:0};
-function fit(){dpr=Math.min(devicePixelRatio||1,2);const vw=innerWidth,vh=innerHeight;canvas.width=Math.round(vw*dpr);canvas.height=Math.round(vh*dpr);const usableH=Math.max(350,vh);scale=Math.min(vw/390,usableH/680);W=vw/scale;H=vh/scale;offX=0;offY=0;ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0)}
+// Stable 390 x 800 virtual court: screen proportions change only presentation,
+// never athlete position, handle radius, wire length or the distance model.
+function fit(){
+  dpr=Math.min(devicePixelRatio||1,2);
+  const vw=innerWidth,vh=innerHeight;
+  canvas.width=Math.round(vw*dpr);canvas.height=Math.round(vh*dpr);
+  W=390;H=800;
+  scale=Math.min(vw/W,vh/H);
+  offX=(vw-W*scale)/2;offY=(vh-H*scale)/2;
+  ctx.setTransform(dpr*scale,0,0,dpr*scale,dpr*offX,dpr*offY);
+}
 // Do not rebase the logical playing field while the finger is down: on mobile,
 // revealing/hiding the browser toolbar can fire a resize in mid-throw.
 let viewportResizePending=false;
+let liftTimer=null,liftUntil=0,lastLiftPoint=null;
+const LIFT_GRACE_MS=155,REJOIN_DISTANCE=60;
+function clearLiftTimer(){if(liftTimer!==null){clearTimeout(liftTimer);liftTimer=null}liftUntil=0;lastLiftPoint=null}
+
 function safeFit(){if(mode==='playing'&&pointer!==null){viewportResizePending=true;return}fit();viewportResizePending=false}
 addEventListener('resize',safeFit);fit();
 function center(t=turns){const p=Math.max(0,Math.min(1,(t-2)/4));return {x:W/2,y:H*.605- p*Math.min(85,H*.13)}}
 function opt(t=turns){const p=Math.max(0,Math.min(1,(t-2)/.36));return OPT_WIND+(OPT_TURN-OPT_WIND)*p}
-function point(e){return {x:e.clientX/scale,y:e.clientY/scale}}
+function point(e){return {x:(e.clientX-offX)/scale,y:(e.clientY-offY)/scale}}
 function setHint(s){$('hint').textContent='Move the handle smoothly to build hammer speed.'}
-function reset(){if(viewportResizePending)safeFit();introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
+
+// Pointer timestamps follow performance.now() on modern browsers. A short,
+// constant buffer lets the 120 Hz simulation sample the same trajectory on
+// both 60 Hz and 120 Hz displays, including coalesced pointer events.
+const INPUT_DELAY_MS=24;
+let inputSamples=[],physicsInputClock=0;
+function sampleTime(e){
+  const t=e.timeStamp;
+  return Number.isFinite(t)&&t>0&&Math.abs(t-performance.now())<60000?t:performance.now();
+}
+function queueHandleSample(e,pos){
+  let t=sampleTime(e);
+  const last=inputSamples[inputSamples.length-1];
+  if(last&&t<=last.t)t=last.t+0.001;
+  inputSamples.push({t,x:pos.x,y:pos.y});
+  while(inputSamples.length>180)inputSamples.shift();
+}
+function handleAt(t){
+  if(!inputSamples.length)return {...simulatedHandle};
+  while(inputSamples.length>2&&inputSamples[1].t<=t)inputSamples.shift();
+  const a=inputSamples[0],b=inputSamples[1];
+  if(!b||t<=a.t)return {x:a.x,y:a.y};
+  if(t>=b.t)return {x:b.x,y:b.y};
+  const q=(t-a.t)/(b.t-a.t);
+  return {x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q};
+}
+
+function reset(){clearLiftTimer();inputSamples=[];physicsInputClock=0;if(viewportResizePending)safeFit();introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>200% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
 function begin(){reset();mode='armed';introStartedAt=performance.now();$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
 function foul(msg){$('roarBubble').hidden=true;mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
 function showToast(s){$('toast').textContent=s;$('toast').style.opacity=1;toastUntil=performance.now()+1900}
-function touchStart(e){lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;introFadeAt=performance.now();pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
+function touchStart(e){
+  // A momentary loss of finger contact is not a deliberate release if the
+  // finger returns near the last point within the short grace period.
+  if(mode==='playing'&&pointer===null&&liftTimer!==null){
+    const p=point(e);
+    if(performance.now()<=liftUntil&&lastLiftPoint&&Math.hypot(p.x-lastLiftPoint.x,p.y-lastLiftPoint.y)<=REJOIN_DISTANCE){
+      e.preventDefault();clearLiftTimer();pointer=e.pointerId;
+      try{canvas.setPointerCapture(pointer)}catch(_){}
+      finger=p;lastAngle=Math.atan2(p.y-center().y,p.x-center().x);angle=lastAngle;
+      inputSamples=[];queueHandleSample(e,handle);
+      physicsInputClock=sampleTime(e)-INPUT_DELAY_MS;
+      simulatedHandle={...handle};acc=0;lastFrame=performance.now();
+      // Keep accumulated turns, angle, hammer velocity and technique state.
+      // The next move will use the angular continuity from the last touch.
+      return;
+    }
+    return; // A different touch must not become an unintended release.
+  }
+  lagExposure=0;if(mode==='ready')begin();if(mode!=='armed'&&mode!=='playing')return;e.preventDefault();if(pointer!==null)return;const p=point(e),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),optimal=opt();if(r>optimal*FAIL){showToast('Start closer to the guide');return}if(p.y<c.y-0.10*optimal){showToast('Start near the lower half · 0°');return}overRadiusSince=0;introFadeAt=performance.now();pointer=e.pointerId;canvas.setPointerCapture(e.pointerId);finger=p;lastAngle=Math.atan2(p.y-c.y,p.x-c.x);angle=lastAngle;ratio=Math.min(1,r/optimal);startDir=0;directionProbe=0;reverseProbe=0;mode='playing';const hr=Math.min(r,optimal);handle={x:c.x+Math.cos(angle)*hr,y:c.y+Math.sin(angle)*hr};prevHandle={...handle};simulatedHandle={...handle};inputSamples=[];queueHandleSample(e,handle);physicsInputClock=sampleTime(e)-INPUT_DELAY_MS;acc=0;lastFrame=performance.now();ball={x:handle.x+Math.cos(angle)*wire,y:handle.y+Math.sin(angle)*wire,vx:0,vy:0};trail=[];telemetry=[];lastSample=-1;previousOrbitRadius=Math.hypot(ball.x-c.x,ball.y-c.y);recentRadiusCollapse=0;recoveryIndicator=0;$('message').classList.add('hide')}
 function touchMove(e){if(e.pointerId!==pointer||mode!=='playing')return;e.preventDefault();const events=e.getCoalescedEvents?.()||[e];for(const ev of events){const p=point(ev),c=center(),r=Math.hypot(p.x-c.x,p.y-c.y),best=opt();finger=p;ratio=r/best;if(r>FAIL*best){if(!overRadiusSince)overRadiusSince=performance.now();if(performance.now()-overRadiusSince>280){foul('You stayed beyond 200% of the ideal handle radius.');return}}else overRadiusSince=0;const a=Math.atan2(p.y-c.y,p.x-c.x);let d=a-lastAngle;while(d>Math.PI)d-=TWO;while(d< -Math.PI)d+=TWO;lastAngle=a;
 // Detect the first deliberate rotation from accumulated angular movement, not
 // a single tiny pointer delta (which can be jitter or a sideways initial touch).
@@ -300,10 +359,62 @@ if(startDir===0){
     reverseProbe=0;
   }
 }
-angle=a;const newC=center(),rHandle=Math.min(r,opt());prevHandle={...handle};handle={x:newC.x+Math.cos(a)*rHandle,y:newC.y+Math.sin(a)*rHandle};
+angle=a;const newC=center(),rHandle=Math.min(r,opt());prevHandle={...handle};handle={x:newC.x+Math.cos(a)*rHandle,y:newC.y+Math.sin(a)*rHandle};queueHandleSample(ev,handle);
 }}
-function touchEnd(e){if(e.pointerId!==pointer)return;e.preventDefault();pointer=null;if(mode!=='playing'){if(viewportResizePending)safeFit();return}release();if(viewportResizePending)safeFit()}
-canvas.addEventListener('pointerdown',touchStart);canvas.addEventListener('pointermove',touchMove);canvas.addEventListener('pointerup',touchEnd);canvas.addEventListener('pointercancel',touchEnd);window.addEventListener('blur',()=>{if(mode==='playing')release()});$('helpOpen').onclick=()=>{helpOpen=true;syncTutorialSetting();$('helpShade').hidden=false;};$('homeHelp').onclick=()=>$('helpOpen').click();$('helpClose').onclick=()=>{helpOpen=false;$('helpShade').hidden=true;};$('helpShade').addEventListener('click',e=>{if(e.target===$('helpShade')){$('helpClose').click()}});$('reset').onclick=()=>{if(pointer!==null){try{if(canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer)}catch(e){}}reset();showModeMenu();};$('start').onclick=()=>{if(gameMode==='practice')begin();else if(!gameFinished)begin();else showModeMenu()};$('message').addEventListener('click',handleResultAction);$('tutorialEnabled').addEventListener('change',e=>{tutorial={enabled:e.target.checked,valid:0};persistTutorial();syncTutorialSetting();introStartedAt=performance.now()});
+// A plausible release toward the landing sector must happen immediately.
+// The grace period is only for touch dropouts away from a viable release.
+// Use exactly the same tangential projectile model and circle offset as release().
+function ballHeadingIntoSector(){
+  if(turns<4)return false; // Third or fourth turn (after the two winds).
+  const pivot=center(),rx=ball.x-pivot.x,ry=ball.y-pivot.y;
+  const orbitRadius=Math.max(1,Math.hypot(rx,ry));
+  const tx=-ry/orbitRadius,ty=rx/orbitRadius;
+  const tangential=ball.vx*tx+ball.vy*ty;
+  const signed=Math.abs(tangential)>0.01?tangential:
+    (Math.sign(angle-lastAngle)||1)*Math.hypot(ball.vx,ball.vy);
+  const vx=tx*signed,vy=ty*signed,v=Math.hypot(vx,vy);
+  if(v<0.01)return false;
+  const flightMs=v*METERS_PER_PIXEL_PER_SECOND*FLIGHT_SPEED_FACTOR;
+  const vh=flightMs*Math.cos(42*Math.PI/180);
+  const vz=flightMs*Math.sin(42*Math.PI/180);
+  const airtime=(vz+Math.sqrt(vz*vz+2*9.81*1.65))/9.81;
+  const distance=vh*airtime;
+  const circleR=Math.min(150,W*.39,H*.26);
+  const lateral=(ball.x-W/2)*1.0675/circleR+distance*vx/v;
+  const forward=(H*.55-ball.y)*1.0675/circleR-distance*vy/v;
+  const limit=forward*Math.tan(SECTOR_HALF_ANGLE);
+  return forward>=1.0675*Math.cos(SECTOR_HALF_ANGLE)
+    &&lateral<=limit*(startDir>0?1.09:1)
+    &&lateral>=-limit*(startDir<=0?1.09:1);
+}
+function touchEnd(e){
+  if(e.pointerId!==pointer)return;
+  e.preventDefault();pointer=null;
+  if(mode!=='playing')return;
+  // The hammer must fly on the finger-lift frame when the projected landing
+  // is in-sector during the third or fourth turn; never freeze a good release.
+  if(ballHeadingIntoSector()){clearLiftTimer();release();return;}
+  lastLiftPoint={...finger};liftUntil=performance.now()+LIFT_GRACE_MS;
+  liftTimer=setTimeout(()=>{
+    liftTimer=null;liftUntil=0;lastLiftPoint=null;
+    if(mode==='playing'&&pointer===null)release();
+  },LIFT_GRACE_MS);
+}
+function interruptThrow(){
+  clearLiftTimer();
+  if(mode!=='playing')return;
+  const old=pointer;pointer=null;
+  try{if(old!==null&&canvas.hasPointerCapture(old))canvas.releasePointerCapture(old)}catch(e){}
+  // Interruptions are not deliberate releases; never award an accidental score.
+  begin();showToast('Throw interrupted — start again');
+}
+canvas.addEventListener('pointerdown',touchStart);
+canvas.addEventListener('pointermove',touchMove);
+canvas.addEventListener('pointerup',touchEnd);
+canvas.addEventListener('pointercancel',e=>{if(e.pointerId===pointer){e.preventDefault();interruptThrow()}});
+canvas.addEventListener('lostpointercapture',e=>{if(e.pointerId===pointer)interruptThrow()});
+window.addEventListener('blur',interruptThrow);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)interruptThrow()});$('helpOpen').onclick=()=>{helpOpen=true;syncTutorialSetting();$('helpShade').hidden=false;};$('homeHelp').onclick=()=>$('helpOpen').click();$('helpClose').onclick=()=>{helpOpen=false;$('helpShade').hidden=true;};$('helpShade').addEventListener('click',e=>{if(e.target===$('helpShade')){$('helpClose').click()}});$('reset').onclick=()=>{if(pointer!==null){try{if(canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer)}catch(e){}}reset();showModeMenu();};$('start').onclick=()=>{if(gameMode==='practice')begin();else if(!gameFinished)begin();else showModeMenu()};$('message').addEventListener('click',handleResultAction);$('tutorialEnabled').addEventListener('change',e=>{tutorial={enabled:e.target.checked,valid:0};persistTutorial();syncTutorialSetting();introStartedAt=performance.now()});
 function release(){if(turns<.3){mode='armed';showToast('Build some rotation before releasing');return}
 // The hammer leaves along the tangent to its own orbit around the athlete,
 // NOT the tangent to the finger/handle path. Use the same velocity for the
@@ -581,7 +692,18 @@ if(simTime-lastSample>=1/40){telemetry.push({turn:turns,speed:speedM,radius:orbi
 function updateHUD(){const c=center(),ba=((TWO-Math.atan2(ball.y-c.y,ball.x-c.x))%TWO+TWO)%TWO;const phase=mode==='flight'||mode==='result'?'RELEASE':turns<2?'WINDS':isSingleSupport(ba)?'SS':'DS';$('phase').textContent=phase;$('turns').textContent=turns.toFixed(2)+' / 6';$('speed').textContent=speedM.toFixed(1)+' m/s';$('radius').textContent=(Math.min(1,ratio)*100).toFixed(0)+'%';$('progress').style.width=Math.min(100,turns/6*100)+'%'}
 function circle(x,y,r,fill,stroke,line=1){ctx.beginPath();ctx.arc(x,y,r,0,TWO);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line;ctx.stroke()}}
 function line(x1,y1,x2,y2,color,w=1,dash=[]){ctx.beginPath();ctx.setLineDash(dash);ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.stroke();ctx.setLineDash([])}
-function render(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#c76c38';ctx.fillRect(0,0,W,H);const grassStart=H*.55-Math.min(150,W*.39,H*.26)-46;ctx.fillStyle='#327a4c';ctx.fillRect(0,0,W,Math.max(0,grassStart));line(0,grassStart,W,grassStart,'#e7b78788',2);
+function render(){
+  // Paint the *entire physical canvas* each frame, including any unused side
+  // bands on unusually wide/narrow displays. This also erases flight trails
+  // left outside the 390x800 court when the viewport changes.
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#c76c38';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const grassEdge=H*.55-Math.min(150,W*.39,H*.26)-46;
+  const physicalGrassEdge=Math.max(0,Math.min(canvas.height,Math.round((offY+grassEdge*scale)*dpr)));
+  ctx.fillStyle='#327a4c';ctx.fillRect(0,0,canvas.width,physicalGrassEdge);
+  ctx.restore();
+ctx.fillStyle='#c76c38';ctx.fillRect(0,0,W,H);const grassStart=H*.55-Math.min(150,W*.39,H*.26)-46;ctx.fillStyle='#327a4c';ctx.fillRect(0,0,W,Math.max(0,grassStart));line(0,grassStart,W,grassStart,'#e7b78788',2);
 const fieldCenter={x:W/2,y:H*.55},circleR=Math.min(150,W*.39,H*.26);circle(fieldCenter.x,fieldCenter.y,circleR,'#6f767b','#dce2df',2);circle(fieldCenter.x,fieldCenter.y,circleR-4,null,'#ffffff22',1);// Sector boundaries originate at the throwing circle itself, not the athlete.
 const sectorLength=Math.max(H*.75,circleR*3.5);
 // Both sector boundaries start at the front rim of the throwing circle.
@@ -895,24 +1017,25 @@ function frame(ts){
   lastFrame=ts;
   // Do not inject enormous impulses after tab suspension or debugger pauses.
   const delta=Math.min(.12,elapsed);
-  if(mode==='playing'&&!helpOpen){
+  if(elapsed>.35&&mode==='playing'){physicsInputClock=ts-INPUT_DELAY_MS;inputSamples=inputSamples.slice(-2);simulatedHandle={...handle};acc=0;}
+  if(mode==='playing'&&!helpOpen&&pointer!==null){
     acc=Math.min(.12,acc+delta);
     const n=Math.floor((acc+1e-10)/FIXED_DT);
     if(n>0){
-      const target={...handle};
-      const from={...simulatedHandle};
-      // Each update advances the handle by an equal portion of its actual
-      // movement. Summed handle motion is invariant to the render frame rate.
-      const hvx=(target.x-from.x)/(n*FIXED_DT);
-      const hvy=(target.y-from.y)/(n*FIXED_DT);
-      for(let k=1;k<=n&&mode==='playing';k++){
-        handle={x:from.x+(target.x-from.x)*k/n,
-                y:from.y+(target.y-from.y)*k/n};
+      // Advance a monotonic input clock by one fixed interval per physics step.
+      // Touch positions are interpolated by event timestamp, not render cadence.
+      const liveTarget={...handle};
+      for(let k=0;k<n&&mode==='playing';k++){
+        physicsInputClock+=FIXED_DT*1000;
+        const next=handleAt(physicsInputClock);
+        const hvx=(next.x-simulatedHandle.x)/FIXED_DT;
+        const hvy=(next.y-simulatedHandle.y)/FIXED_DT;
+        handle=next;
         physics(FIXED_DT,hvx,hvy);
+        simulatedHandle=next;
         acc-=FIXED_DT;
       }
-      handle=target;
-      simulatedHandle=target;
+      handle=liveTarget;
       acc=Math.max(0,acc);
     }
   }else{acc=0;simulatedHandle={...handle}}
