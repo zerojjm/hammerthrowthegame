@@ -290,7 +290,11 @@ function setHint(s){$('hint').textContent='Move the handle smoothly to build ham
 // Pointer timestamps follow performance.now() on modern browsers. A short,
 // constant buffer lets the 120 Hz simulation sample the same trajectory on
 // both 60 Hz and 120 Hz displays, including coalesced pointer events.
-const INPUT_DELAY_MS=24;
+// Keep latency low (the old control responded at the next rendered frame).
+// A short predictive bridge between irregular touch samples avoids artificial
+// zero-velocity stalls; these are particularly damaging during turns.
+const INPUT_DELAY_MS=8;
+const MAX_INPUT_EXTRAPOLATION_MS=20;
 let inputSamples=[],physicsInputClock=0;
 function sampleTime(e){
   const t=e.timeStamp;
@@ -300,17 +304,33 @@ function queueHandleSample(e,pos){
   let t=sampleTime(e);
   const last=inputSamples[inputSamples.length-1];
   if(last&&t<=last.t)t=last.t+0.001;
-  inputSamples.push({t,x:pos.x,y:pos.y});
+  inputSamples.push({t,x:pos.x,y:pos.y,turns,angle,ratio});
   while(inputSamples.length>180)inputSamples.shift();
 }
 function handleAt(t){
-  if(!inputSamples.length)return {...simulatedHandle};
+  if(!inputSamples.length)return {...simulatedHandle,turns,angle,ratio};
   while(inputSamples.length>2&&inputSamples[1].t<=t)inputSamples.shift();
   const a=inputSamples[0],b=inputSamples[1];
-  if(!b||t<=a.t)return {x:a.x,y:a.y};
-  if(t>=b.t)return {x:b.x,y:b.y};
+  if(!b||t<=a.t)return {...a};
+  if(t>=b.t){
+    const span=b.t-a.t;
+    // Only bridge short, credible sampling intervals. Never invent movement
+    // following a stalled or suspended browser, a lift-off, or one old sample.
+    if(span<1||span>45||liftUntil||pointer===null)return {...b};
+    const ahead=Math.min(t-b.t,MAX_INPUT_EXTRAPOLATION_MS);
+    if(ahead<=0)return {...b};
+    const q=ahead/span;
+    const deltaAngle=Math.atan2(Math.sin(b.angle-a.angle),Math.cos(b.angle-a.angle));
+    return {x:b.x+(b.x-a.x)*q,y:b.y+(b.y-a.y)*q,
+      turns:Math.max(0,Math.min(6.2,b.turns+(b.turns-a.turns)*q)),
+      angle:b.angle+deltaAngle*q,
+      ratio:b.ratio+(b.ratio-a.ratio)*q};
+  }
   const q=(t-a.t)/(b.t-a.t);
-  return {x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q};
+  return {x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q,
+    turns:a.turns+(b.turns-a.turns)*q,
+    angle:a.angle+Math.atan2(Math.sin(b.angle-a.angle),Math.cos(b.angle-a.angle))*q,
+    ratio:a.ratio+(b.ratio-a.ratio)*q};
 }
 
 function reset(){clearLiftTimer();inputSamples=[];physicsInputClock=0;if(viewportResizePending)safeFit();introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>250% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
@@ -1032,18 +1052,22 @@ function frame(ts){
     if(n>0){
       // Advance a monotonic input clock by one fixed interval per physics step.
       // Touch positions are interpolated by event timestamp, not render cadence.
-      const liveTarget={...handle};
+      // Physics must use the SAME time-sampled athlete phase and handle motion.
+      // Previously the live turn counter raced 24ms ahead of the interpolated
+      // handle, applying turn-only resistance before the corresponding motion.
+      const liveTarget={...handle},liveTurns=turns,liveAngle=angle,liveRatio=ratio;
       for(let k=0;k<n&&mode==='playing';k++){
         physicsInputClock+=FIXED_DT*1000;
         const next=handleAt(physicsInputClock);
         const hvx=(next.x-simulatedHandle.x)/FIXED_DT;
         const hvy=(next.y-simulatedHandle.y)/FIXED_DT;
-        handle=next;
+        handle={x:next.x,y:next.y};
+        turns=next.turns;angle=next.angle;ratio=next.ratio;
         physics(FIXED_DT,hvx,hvy);
-        simulatedHandle=next;
+        simulatedHandle={x:next.x,y:next.y};
         acc-=FIXED_DT;
       }
-      handle=liveTarget;
+      handle=liveTarget;turns=liveTurns;angle=liveAngle;ratio=liveRatio;
       acc=Math.max(0,acc);
     }
   }else{acc=0;simulatedHandle={...handle}}
