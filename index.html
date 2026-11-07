@@ -367,7 +367,7 @@ function handleAt(t){
     ratio:a.ratio+(b.ratio-a.ratio)*q};
 }
 
-function reset(){clearLiftTimer();inputSamples=[];physicsInputClock=0;if(viewportResizePending)safeFit();introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.remove('hide');$('message').innerHTML='<h2>Feel the hammer.</h2><p>Move your finger around the <strong>green dashed guide</strong> to drive the handle.<br><br>Two slightly easier overhead winds, then three or four advancing turns with uphill and single-support constraints. Inside the guide shortens your reach; outside is capped at the guide unless you stay beyond <strong>250% for a moment</strong>.<br><br>Release after 3 or 4 full turns by lifting your finger.</p>';$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
+function reset(){clearLiftTimer();inputSamples=[];physicsInputClock=0;if(viewportResizePending)safeFit();introStartedAt=performance.now();introFadeAt=-1;$('roarBubble').hidden=true;$('roarBubble').classList.remove('small-roar');attemptResolved=false;lagExposure=0; $('message').classList.remove('results');telemetry=[];lastSample=-1;mode='ready';pointer=null;turns=0;angle=0;lastAngle=0;startDir=0;directionProbe=0;reverseProbe=0;ratio=1;overRadiusSince=0;simTime=0;speedM=0;lateCarryEfficiency=1;lateCarryCaptured=false;smoothness=1;previousOrbitRadius=0;recentRadiusCollapse=0;recoveryIndicator=0;acc=0;flight=null;trail=[];const c=center(0);handle={x:c.x,y:c.y+OPT_WIND};prevHandle={...handle};simulatedHandle={...handle};ball={x:handle.x,y:handle.y+wire,vx:0,vy:0};$('message').classList.add('hide');$('start').textContent='START';setHint('Press START, then touch near the bottom START marker and trace a smooth circle.');updateHUD()}
 function begin(){reset();mode='armed';introStartedAt=performance.now();$('message').classList.add('hide');$('start').textContent='RETRY';setHint('Start at the bottom START marker (0°). Rotate steadily. During turns: uphill and support phases adapt to your rotation direction. Lift to release.')}
 function foul(msg){$('roarBubble').hidden=true;mode='foul';pointer=null;$('toast').style.opacity=0;toastUntil=0;$('message').innerHTML='<h2>FOUL</h2><p>'+msg+'<br><br>Try again with a smoother orbit.</p><button type="button" class="primary retry-in-message">RESTART THROW</button>';$('message').classList.remove('hide');setHint('The attempt failed. Try smoother circles near the guide.');resolveAttempt({valid:false,reason:msg,distance:null,speed:speedM,foul:true})}
 function showToast(s){$('toast').textContent=s;$('toast').style.opacity=1;toastUntil=performance.now()+1900}
@@ -803,10 +803,29 @@ function makeSurfacePattern(kind){
   }
   return ctx.createPattern(tile,'repeat');
 }
-let grassPattern25D=null, mondoPattern25D=null;
+function makeConcretePattern25D(){
+  const tile=document.createElement('canvas');tile.width=128;tile.height=128;
+  const g=tile.getContext('2d');let seed=19371;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+  // Fine granular cement with dark aggregate and light stone chips.
+  for(let i=0;i<7600;i++){
+    const x=random()*128,y=random()*128,v=random(),r=.45+random()*1.8;
+    g.fillStyle=v<.29?'rgba(42,55,61,.26)':v<.69?'rgba(232,239,234,.30)':'rgba(82,105,114,.19)';
+    g.fillRect(x,y,r,r);
+  }
+  // A few larger, irregular aggregate chips for visibility on phone screens.
+  for(let i=0;i<170;i++){
+    const x=random()*128,y=random()*128,rx=.7+random()*2.0,ry=.65+random()*1.35;
+    g.fillStyle=i%3===0?'rgba(241,244,233,.23)':'rgba(55,70,77,.16)';
+    g.beginPath();g.ellipse(x,y,rx,ry,random()*Math.PI,0,Math.PI*2);g.fill();
+  }
+  return ctx.createPattern(tile,'repeat');
+}
+let grassPattern25D=null, mondoPattern25D=null, concretePattern25D=null;
 function ensureSurfacePatterns(){
   if(!grassPattern25D)grassPattern25D=makeSurfacePattern('grass');
   if(!mondoPattern25D)mondoPattern25D=makeSurfacePattern('mondo');
+  if(!concretePattern25D)concretePattern25D=makeConcretePattern25D();
 }
 function stadium25D(){
   const grassStart=H*.55-Math.min(150,W*.39,H*.26)-46;
@@ -896,19 +915,20 @@ function stadium25D(){
   ctx.beginPath(); ctx.ellipse(fc.x,fc.y,innerRx,innerRy,0,0,TWO); ctx.closePath();
   ctx.fillStyle=concrete; ctx.fill();
   ctx.clip();
-  // Slight concrete texture: flecks plus subtle brushed arcs.
-  for(let i=0;i<58;i++){
-    const a=(i/58)*TWO,rp=.12+((i*37)%100)/100*.78;
-    const px=fc.x+Math.cos(a)*innerRx*rp;
-    const py=fc.y+Math.sin(a)*innerRy*rp;
-    ctx.fillStyle=i%2===0?'#c7d0d430':'#6f7d8320';
-    ctx.fillRect(px,py,1.8,1.8);
-  }
-  for(let i=0;i<6;i++){
-    ctx.beginPath();
-    ctx.ellipse(fc.x,fc.y,innerRx*(.34+i*.085),innerRy*(.34+i*.085),0,-2.4,-0.65,false);
-    ctx.strokeStyle=i%2===0?'#ffffff14':'#5b676d14';
-    ctx.lineWidth=1; ctx.stroke();
+  // Very subtle cement pores over a mostly smooth concrete surface.
+  // Keep the fine existing pattern, but blend at low opacity so the
+  // throwing circle reads as smooth concrete rather than rough gravel.
+  ctx.fillStyle=concretePattern25D;
+  ctx.globalAlpha=.23;
+  ctx.fillRect(fc.x-innerRx,fc.y-innerRy,innerRx*2,innerRy*2);
+  ctx.globalAlpha=1;
+  // Sparse, low-contrast flecks only (no prominent stones or arcs).
+  for(let i=0;i<42;i++){
+    const a=i*2.399963229728653;
+    const r=Math.sqrt((i+.5)/42)*.93;
+    const px=fc.x+Math.cos(a)*innerRx*r,py=fc.y+Math.sin(a)*innerRy*r;
+    ctx.fillStyle=i%3===0?'#e7ece51c':'#576b7214';
+    ctx.fillRect(px,py,1.1+(i%3)*.2,1+(i%4)*.15);
   }
   ctx.restore();
   return {fieldCenter:fc,circleR:rr,grassStart};
@@ -985,6 +1005,7 @@ function athlete25D(c,fx,fy,ox,oy,ha,bodyRotation){
 // The visible canvas can be wider than the virtual 390x800 playing court.
 // These bounds are recalculated for the camera before drawing the stadium.
 let backgroundBounds={left:-250,right:W+250,top:-250,bottom:H+250};
+let visibleFlightBounds={left:0,right:W,top:0,bottom:H};
 function render(){
   // Clear every device pixel. All surfaces (including screen-side extensions)
   // are then painted *inside* the camera transform, without fixed side stripes.
@@ -1019,6 +1040,7 @@ const x1=((canvas.width/dpr-offX)/scale-camX)/visualZoom+camX;
 const y0=(-offY/scale-camY-visualShift)/visualZoom+camY;
 const y1=((canvas.height/dpr-offY)/scale-camY-visualShift)/visualZoom+camY;
 backgroundBounds={left:x0-180,right:x1+180,top:y0-560,bottom:y1+220};
+visibleFlightBounds={left:x0,right:x1,top:y0,bottom:y1};
 const {fieldCenter,circleR,grassStart}=stadium25D();
 // Sector boundaries originate at the throwing circle itself, not the athlete.
 const sectorLength=Math.max(H*.75,circleR*3.5);
@@ -1129,7 +1151,7 @@ if(trail.length>2&&mode!=='result'){
     // Keep the released-ball trail visually close to the in-turn trace:
     // slightly brighter for readability, but not thicker/bolder. Fade it out
     // while the ball travels behind the HUD and clear it before results.
-    const hold=flight?(flight.roar?2.10:(flight.smallRoar?1.58:0.34)):0.34;
+    const hold=0.08;
     const fade=(!flight||flight.exitAt===undefined)?1:Math.max(0,1-((flight.t-flight.exitAt)/hold));
     ctx.strokeStyle=`rgba(255, 214, 126, ${0.78*fade})`;ctx.lineWidth=2.25;ctx.stroke();
   }else{
@@ -1311,10 +1333,10 @@ function drawFlight(){
   ball.y=f.start.y+dy;
   // Upward throws disappear under the HUD; other directions leave the
   // playing field naturally rather than being redirected upward.
-  f.hidden=(ball.y<backgroundBounds.top+ballRadius) ||
-    (ball.x<backgroundBounds.left+ballRadius) ||
-    (ball.x>backgroundBounds.right-ballRadius) ||
-    (ball.y>backgroundBounds.bottom-ballRadius);
+  f.hidden=(ball.y<visibleFlightBounds.top-ballRadius) ||
+    (ball.x<visibleFlightBounds.left-ballRadius) ||
+    (ball.x>visibleFlightBounds.right+ballRadius) ||
+    (ball.y>visibleFlightBounds.bottom+ballRadius);
   // A short, fading trace shows the outgoing direction and remains visible
   // during the brief pause after the ball disappears under the top HUD.
   if(!f.hidden){
@@ -1325,7 +1347,7 @@ function drawFlight(){
     }
   }
   if(f.hidden&&f.exitAt===undefined)f.exitAt=f.t;
-  if(!f.final&&((f.hidden&&f.t-f.exitAt>=(f.roar?2.10:f.smallRoar?1.58:0.34))||f.t>=4.18)){
+  if(!f.final&&((f.hidden&&f.t-f.exitAt>=0.08)||f.t>=4.18)){
     f.final=true;mode='result';$('roarBubble').hidden=true;trail=[];
     // Check the actual landing MARK against the drawn sector, not just flight direction.
     // The rays extend from the circle's front rim at +/-17.46 degrees; if extended
